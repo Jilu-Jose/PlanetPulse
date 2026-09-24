@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PlanetPulse – AI-powered personal carbon footprint tracker. Turn everyday travel, food and electricity choices into a visible CO₂e footprint." />
+  <title>PlanetPulse – AI Carbon Footprint Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== TOAST NOTIFICATION ===== -->
+<div id="toast" class="toast hidden" role="alert" aria-live="assertive">
+  <span class="toast-icon">⚠️</span>
+  <span id="toast-msg">Unable to connect to PlanetPulse. Please try again.</span>
+  <button class="toast-retry" onclick="hideToast()">Retry</button>
+  <button class="toast-close" onclick="hideToast()" aria-label="Close">✕</button>
+</div>
+
+<!-- ===== DESKTOP NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="#" class="nav-logo" id="nav-logo-btn" onclick="navigateTo('dashboard'); return false;">
+      <div class="logo-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="14" fill="#16A34A"/>
+          <path d="M14 6C10 6 7 9.5 7 14c0 .8.3 2 .8 2.8C9 14.5 11 13 14 13s5 1.5 6.2 3.8c.5-.8.8-2 .8-2.8 0-4.5-3-8-7-8z" fill="white" opacity="0.9"/>
+          <path d="M14 15c-2.5 0-4.5 1-5.8 2.8C9.5 20.2 11.6 21.5 14 21.5s4.5-1.3 5.8-3.7C18.5 16 16.5 15 14 15z" fill="white"/>
+        </svg>
+      </div>
+      <span class="nav-wordmark">PlanetPulse</span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="#" class="nav-link active" id="nav-dashboard" onclick="navigateTo('dashboard'); return false;">Dashboard</a>
+      <a href="#" class="nav-link" id="nav-add" onclick="navigateTo('add'); return false;">Add Activity</a>
+      <a href="#" class="nav-link" id="nav-whatif" onclick="navigateTo('whatif'); return false;">What-If</a>
+      <a href="#" class="nav-link" id="nav-ai" onclick="navigateTo('ai'); return false;">Ask AI</a>
+      <a href="#" class="nav-link" id="nav-history" onclick="navigateTo('history'); return false;">History</a>
+      <a href="#" class="nav-link" id="nav-methodology" onclick="navigateTo('methodology'); return false;">Methodology</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-pill btn-primary" onclick="navigateTo('add')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Activity
+      </button>
+      <button class="icon-btn" aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MOBILE BOTTOM TAB BAR ===== -->
+<nav class="mobile-tabs" id="mobile-tabs">
+  <button class="tab-item active" id="tab-dashboard" onclick="navigateTo('dashboard')" aria-label="Dashboard">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    <span>Home</span>
+  </button>
+  <button class="tab-item" id="tab-whatif" onclick="navigateTo('whatif')" aria-label="What-If">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <span>What-If</span>
+  </button>
+  <div class="tab-fab-spacer"></div>
+  <button class="tab-item" id="tab-ai" onclick="navigateTo('ai')" aria-label="Ask AI">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2"/><path d="M12 8v4l3 3"/></svg>
+    <span>Ask AI</span>
+  </button>
+  <button class="tab-item" id="tab-history" onclick="navigateTo('history')" aria-label="History">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+    <span>History</span>
+  </button>
+</nav>
+
+<!-- Mobile FAB -->
+<button class="mobile-fab" id="mobile-fab" onclick="navigateTo('add')" aria-label="Add Activity">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main-content" id="main-content">
+
+  <!-- ========== SCREEN 1: DASHBOARD ========== -->
+  <section id="screen-dashboard" class="screen active">
+    <!-- Skeleton loader -->
+    <div class="skeleton-overlay" id="dashboard-skeleton">
+      <div class="skeleton-hero"></div>
+      <div class="skeleton-cards">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+      <div class="skeleton-chart"></div>
+    </div>
+
+    <!-- Hero Card -->
+    <div class="hero-card" id="dashboard-content" style="opacity:0">
+      <div class="hero-header">
+        <div class="hero-left">
+          <div class="hero-label-row">
+            <svg class="hero-leaf" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+            <span class="hero-label">Your Carbon Footprint</span>
+          </div>
+          <div class="hero-number-row">
+            <span class="hero-number">8.42</span>
+            <span class="hero-unit">kg CO₂e</span>
+          </div>
+          <p class="hero-caption">Today's Footprint</p>
+          <span class="badge badge-green">↓ 12% vs yesterday</span>
+        </div>
+        <div class="hero-right">
+          <div class="toggle-group" role="group" aria-label="Time period">
+            <button class="toggle-btn active" onclick="setToggle(this,'today')">Today</button>
+            <button class="toggle-btn" onclick="setToggle(this,'week')">Week</button>
+            <button class="toggle-btn" onclick="setToggle(this,'month')">Month</button>
+          </div>
+        </div>
+      </div>
+      <div class="hero-progress-row">
+        <span class="hero-progress-label">Weekly target: 55.0 kg CO₂e</span>
+        <div class="hero-progress-bar">
+          <div class="hero-progress-fill" style="width: 69.8%"></div>
+        </div>
+        <span class="hero-progress-pct">38.4 / 55.0 kg (69.8%)</span>
+      </div>
+    </div>
+
+    <!-- Category Cards -->
+    <div class="category-grid" id="category-grid" style="opacity:0">
+      <div class="cat-card">
+        <div class="cat-header">
+          <div class="cat-icon-wrap cat-travel">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          </div>
+          <span class="cat-pct-badge">38% of total</span>
+        </div>
+        <p class="cat-label">Travel</p>
+        <div class="cat-value-row">
+          <span class="cat-value">3.20</span>
+          <span class="cat-unit">kg CO₂e</span>
+        </div>
+        <div class="cat-bar-track">
+          <div class="cat-bar-fill" style="width:38%;background:#16A34A"></div>
+        </div>
+        <p class="cat-sub">2 commutes logged</p>
+      </div>
+      <div class="cat-card">
+        <div class="cat-header">
+          <div class="cat-icon-wrap cat-food">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+          </div>
+          <span class="cat-pct-badge">25% of total</span>
+        </div>
+        <p class="cat-label">Food</p>
+        <div class="cat-value-row">
+          <span class="cat-value">2.12</span>
+          <span class="cat-unit">kg CO₂e</span>
+        </div>
+        <div class="cat-bar-track">
+          <div class="cat-bar-fill" style="width:25%;background:#4ADE80"></div>
+        </div>
+        <p class="cat-sub">Lunch & snacks logged</p>
+      </div>
+      <div class="cat-card">
+        <div class="cat-header">
+          <div class="cat-icon-wrap cat-elec">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <span class="cat-pct-badge">37% of total</span>
+        </div>
+        <p class="cat-label">Electricity</p>
+        <div class="cat-value-row">
+          <span class="cat-value">3.10</span>
+          <span class="cat-unit">kg CO₂e</span>
+        </div>
+        <div class="cat-bar-track">
+          <div class="cat-bar-fill" style="width:37%;background:#86EFAC"></div>
+        </div>
+        <p class="cat-sub">Smart meter: 8.2 kWh</p>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row" id="charts-row" style="opacity:0">
+      <div class="chart-card chart-trend">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">7-Day Footprint Trend</h2>
+            <p class="chart-sub">Normalized against your 7.9 kg baseline</p>
+          </div>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot" style="background:#16A34A"></span>Daily Total</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#BBF7D0;border:1px dashed #16A34A"></span>Avg (7.9 kg)</span>
+          </div>
+        </div>
+        <div class="chart-area-wrapper">
+          <canvas id="trendChart" width="560" height="200"></canvas>
+        </div>
+        <div class="chart-x-labels">
+          <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+        </div>
+      </div>
+      <div class="chart-card chart-donut">
+        <h2 class="chart-title">Category Share</h2>
+        <p class="chart-sub">Distribution across active tracking streams</p>
+        <div class="donut-wrapper">
+          <canvas id="donutChart" width="160" height="160"></canvas>
+          <div class="donut-center">
+            <span class="donut-total">8.42</span>
+            <span class="donut-label">kg CO₂e</span>
+          </div>
+        </div>
+        <div class="donut-legend">
+          <div class="donut-legend-item"><span class="legend-dot" style="background:#16A34A"></span><span>Travel</span><span class="donut-val">3.20 kg (38%)</span></div>
+          <div class="donut-legend-item"><span class="legend-dot" style="background:#86EFAC"></span><span>Electricity</span><span class="donut-val">3.10 kg (37%)</span></div>
+          <div class="donut-legend-item"><span class="legend-dot" style="background:#4ADE80"></span><span>Food</span><span class="donut-val">2.12 kg (25%)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Row -->
+    <div class="bottom-row" id="bottom-row" style="opacity:0">
+      <div class="contributors-card">
+        <div class="contributors-header">
+          <h2 class="section-title">Top Contributors</h2>
+          <button class="link-btn" onclick="navigateTo('history')">View All Log →</button>
+        </div>
+        <div class="contributors-list">
+          <div class="contributor-item">
+            <div class="contrib-icon" style="background:#FEF2F2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg>
+            </div>
+            <div class="contrib-info">
+              <div class="contrib-name-row">
+                <span class="contrib-name">Car Commute</span>
+                <span class="badge badge-red">High</span>
+              </div>
+              <span class="contrib-detail">Petrol · 25 km</span>
+            </div>
+            <div class="contrib-right">
+              <span class="contrib-value">4.80 kg</span>
+              <span class="contrib-pct">57% of daily</span>
+            </div>
+          </div>
+          <div class="contributor-item">
+            <div class="contrib-icon" style="background:#ECFDF5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div class="contrib-info">
+              <div class="contrib-name-row">
+                <span class="contrib-name">Grid Electricity</span>
+                <span class="badge badge-amber">Moderate</span>
+              </div>
+              <span class="contrib-detail">Central AC · 8.2 kWh</span>
+            </div>
+            <div class="contrib-right">
+              <span class="contrib-value">2.42 kg</span>
+              <span class="contrib-pct">29% of daily</span>
+            </div>
+          </div>
+          <div class="contributor-item">
+            <div class="contrib-icon" style="background:#ECFDF5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+            </div>
+            <div class="contrib-info">
+              <div class="contrib-name-row">
+                <span class="contrib-name">Beef Burrito</span>
+                <span class="badge badge-green-soft">Standard</span>
+              </div>
+              <span class="contrib-detail">Lunch · Local dining vendor</span>
+            </div>
+            <div class="contrib-right">
+              <span class="contrib-value">1.20 kg</span>
+              <span class="contrib-pct">14% of daily</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insight Card -->
+      <div class="ai-card">
+        <div class="ai-card-header">
+          <div class="ai-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <div>
+            <h2 class="ai-title">AI Insight &amp; Tips</h2>
+          </div>
+          <span class="ai-badge">Synthesis</span>
+        </div>
+        <p class="ai-insight-text">Replacing your morning solo car commute with the express bus 3 times a week could reduce your monthly footprint by <strong>38.6 kg CO₂e</strong> (down 18%).</p>
+        <p class="ai-source-note">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Based on your activity + sourced knowledge base
+        </p>
+        <div class="ai-metrics">
+          <div class="ai-metric">
+            <span class="ai-metric-label">Simulated ROI</span>
+            <span class="ai-metric-value" style="color:#DC2626">-18.4%</span>
+            <span class="ai-metric-sub">Annualized trajectory</span>
+          </div>
+          <div class="ai-metric">
+            <span class="ai-metric-label">Estimated Savings</span>
+            <span class="ai-metric-value" style="color:#16A34A">$124.00</span>
+            <span class="ai-metric-sub">Monthly fuel delta</span>
+          </div>
+        </div>
+        <div class="ai-actions">
+          <button class="btn-pill btn-primary" onclick="navigateTo('ai')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            Explain my footprint
+          </button>
+          <button class="btn-pill btn-outline" onclick="navigateTo('ai')">Ask a question</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Note -->
+    <div class="footer-note">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Values are estimates based on documented emission factors (DEFRA 2023 / EPA eGRID). Updated 14 mins ago.
+    </div>
+  </section>
+
+  <!-- ========== SCREEN 2: ADD ACTIVITY ========== -->
+  <section id="screen-add" class="screen">
+    <div class="form-screen-wrapper">
+      <div class="form-card">
+        <div class="form-card-header">
+          <h1 class="form-title">Add Activity</h1>
+          <p class="form-subtitle">Log your travel, food, or energy use to track your carbon footprint.</p>
+        </div>
+
+        <!-- Success State (hidden by default) -->
+        <div id="add-success" class="success-state hidden">
+          <div class="success-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+          </div>
+          <h2 class="success-title">Activity recorded successfully</h2>
+          <div class="success-footprint">
+            <span class="success-label">Estimated footprint</span>
+            <span class="success-value">4.80 kg CO₂e</span>
+          </div>
+          <details class="calc-details">
+            <summary class="calc-summary">How was this calculated?</summary>
+            <div class="calc-body">
+              <div class="calc-row"><span>Quantity</span><span>25 km</span></div>
+              <div class="calc-row"><span>Emission factor</span><span>0.192 kg CO₂e / km</span></div>
+              <div class="calc-row"><span>Calculation</span><span>25 × 0.192 = 4.80 kg</span></div>
+              <div class="calc-row"><span>Factor source</span><span>DEFRA 2023, Table A</span></div>
+              <div class="calc-row"><span>Logged at</span><span>24 Sep 2026, 11:21 AM</span></div>
+            </div>
+          </details>
+          <button class="btn-pill btn-primary" onclick="resetAddForm()" style="width:100%;margin-top:16px">Add Another Activity</button>
+        </div>
+
+        <!-- Add Form -->
+        <form id="add-form" onsubmit="submitActivity(event)" novalidate>
+          <!-- Category -->
+          <div class="field-group">
+            <label class="field-label">Category</label>
+            <div class="segment-control" role="group" aria-label="Category">
+              <button type="button" class="segment-btn active" data-cat="travel" onclick="selectCategory('travel',this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2"/></svg>
+                Travel
+              </button>
+              <button type="button" class="segment-btn" data-cat="food" onclick="selectCategory('food',this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+                Food
+              </button>
+              <button type="button" class="segment-btn" data-cat="electricity" onclick="selectCategory('electricity',this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Electricity
+              </button>
+            </div>
+          </div>
+
+          <!-- Activity -->
+          <div class="field-group">
+            <label class="field-label" for="activity-type">Activity Type</label>
+            <select class="form-select" id="activity-type" required>
+              <option value="">Select activity…</option>
+              <option value="car">Car (Petrol)</option>
+              <option value="motorcycle">Motorcycle</option>
+              <option value="bus">Bus</option>
+              <option value="train">Train</option>
+              <option value="flight">Flight</option>
+              <option value="ev">Electric Vehicle (EV)</option>
+              <option value="bicycle">Bicycle</option>
+              <option value="walking">Walking</option>
+            </select>
+            <div class="field-error hidden" id="err-activity">This activity type is currently unsupported.</div>
+          </div>
+
+          <!-- Quantity + Unit -->
+          <div class="field-row">
+            <div class="field-group" style="flex:1">
+              <label class="field-label" for="quantity">Quantity</label>
+              <input class="form-input" id="quantity" type="number" min="0.01" step="any" placeholder="e.g. 25" required />
+              <div class="field-error hidden" id="err-qty">Quantity must be greater than 0.</div>
+            </div>
+            <div class="field-group" style="width:140px">
+              <label class="field-label" for="unit">Unit</label>
+              <select class="form-select" id="unit">
+                <option value="km">km</option>
+                <option value="g">g</option>
+                <option value="kWh">kWh</option>
+                <option value="miles">miles</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Date -->
+          <div class="field-group">
+            <label class="field-label" for="activity-date">Date <span class="optional-tag">(optional)</span></label>
+            <input class="form-input" id="activity-date" type="date" />
+          </div>
+
+          <!-- Submit -->
+          <button class="btn-pill btn-primary btn-full" type="submit" id="add-submit-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Activity
+          </button>
+        </form>
+      </div>
+
+      <!-- Validation Preview Panel -->
+      <div class="validation-panel">
+        <h3 class="vp-title">Validation States</h3>
+        <div class="vp-example">
+          <div class="field-error" style="display:flex">Quantity must be greater than 0.</div>
+        </div>
+        <div class="vp-example">
+          <div class="field-error" style="display:flex">This activity type is currently unsupported.</div>
+        </div>
+        <div class="vp-example">
+          <div class="field-success">✓ Activity type recognized</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SCREEN 3: WHAT-IF ========== -->
+  <section id="screen-whatif" class="screen">
+    <div class="screen-header">
+      <h1 class="screen-title">What-If Comparison</h1>
+      <p class="screen-subtitle">Compare the carbon impact of different travel and lifestyle choices.</p>
+    </div>
+
+    <!-- Comparison Cards -->
+    <div class="whatif-cards">
+      <div class="whatif-card current">
+        <div class="whatif-card-tag">Current</div>
+        <div class="whatif-icon-wrap">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </div>
+        <div class="whatif-activity">Car (Petrol)</div>
+        <div class="whatif-distance">25 km</div>
+        <div class="whatif-emission">4.80 <span>kg CO₂e</span></div>
+        <div class="whatif-bar-track">
+          <div class="whatif-bar-fill" style="width:100%;background:#FECACA"></div>
+        </div>
+      </div>
+
+      <div class="whatif-vs">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#BBF7D0" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+
+      <div class="whatif-card alternative">
+        <div class="whatif-card-tag alt">Alternative</div>
+        <div class="whatif-icon-wrap">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><rect x="2" y="8" width="20" height="10" rx="2"/><path d="M6 8V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/><circle cx="7" cy="18" r="1"/><circle cx="17" cy="18" r="1"/></svg>
+        </div>
+        <div class="whatif-selector">
+          <select class="form-select" id="alt-mode" onchange="updateAlt(this)">
+            <option value="bus">Bus</option>
+            <option value="train">Train</option>
+            <option value="ev">Electric Vehicle</option>
+            <option value="bicycle">Bicycle</option>
+          </select>
+        </div>
+        <div class="whatif-distance">25 km</div>
+        <div class="whatif-emission" id="alt-emission">1.50 <span>kg CO₂e</span></div>
+        <div class="whatif-bar-track">
+          <div class="whatif-bar-fill" id="alt-bar" style="width:31%;background:#BBF7D0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saving Banner -->
+    <div class="saving-banner" id="saving-banner">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14532D" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/></svg>
+      <span>Potential saving: <strong id="saving-value">3.30 kg CO₂e</strong></span>
+      <span class="saving-badge" id="saving-pct">-69% emissions</span>
+    </div>
+
+    <!-- Bar Chart Comparison -->
+    <div class="chart-card" style="margin-top:24px">
+      <h2 class="chart-title" style="margin-bottom:20px">Emissions Comparison — 25 km</h2>
+      <div class="bar-chart-container">
+        <div class="bar-chart">
+          <div class="bar-group">
+            <div class="bar-fill-h" style="width:100%;background:#FECACA;border:1px solid #FCA5A5">
+              <span class="bar-label-inner">Car — 4.80 kg</span>
+            </div>
+            <span class="bar-mode">Car</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-fill-h" id="bar-bus" style="width:31%;background:#BBF7D0;border:1px solid #86EFAC">
+              <span class="bar-label-inner">Bus — 1.50 kg</span>
+            </div>
+            <span class="bar-mode">Bus</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-fill-h" id="bar-train" style="width:13%;background:#A7F3D0;border:1px solid #6EE7B7">
+              <span class="bar-label-inner">Train — 0.63 kg</span>
+            </div>
+            <span class="bar-mode">Train</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-fill-h" id="bar-ev" style="width:19%;background:#D1FAE5;border:1px solid #A7F3D0">
+              <span class="bar-label-inner">EV — 0.90 kg</span>
+            </div>
+            <span class="bar-mode">EV</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-fill-h" style="width:0%;background:#ECFDF5;border:1px dashed #BBF7D0;min-width:50px">
+              <span class="bar-label-inner">Bicycle — 0 kg</span>
+            </div>
+            <span class="bar-mode">Bicycle</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Explanation -->
+    <div class="ai-explain-card">
+      <div class="ai-explain-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        AI Explanation
+        <span class="ai-badge">Verified</span>
+      </div>
+      <p class="ai-explain-text">These numbers come from the PlanetPulse calculation engine using DEFRA 2023 emission factors. Bus emissions are based on an average occupancy of 12 passengers. The bicycle figure is zero direct CO₂e for the journey itself.</p>
+      <button class="btn-pill btn-outline btn-sm" onclick="navigateTo('ai')">Ask a follow-up question →</button>
+    </div>
+  </section>
+
+  <!-- ========== SCREEN 4: ASK AI ========== -->
+  <section id="screen-ai" class="screen">
+    <div class="ai-layout">
+      <div class="ai-chat-panel">
+        <!-- AI Unavailable Banner -->
+        <div class="amber-banner" id="ai-unavailable" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          AI insights are temporarily unavailable. Your carbon calculations are still accurate.
+          <button class="amber-dismiss" onclick="this.parentElement.style.display='none'">✕</button>
+        </div>
+
+        <div class="chat-header">
+          <div class="chat-header-info">
+            <div class="chat-avatar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <div>
+              <h1 class="chat-title">PlanetPulse Climate Assistant</h1>
+              <p class="chat-subtitle">Ask about your carbon data, sustainable switches, or emission factors</p>
+            </div>
+          </div>
+          <button class="btn-pill btn-outline btn-sm" onclick="toggleAIBanner()">Toggle AI Status</button>
+        </div>
+
+        <!-- Suggested Prompts -->
+        <div class="prompt-chips" id="prompt-chips">
+          <p class="chips-label">Suggested exploration prompts</p>
+          <div class="chips-row">
+            <button class="chip" onclick="sendPrompt('How can I reduce my travel footprint?')">🌿 How can I reduce my travel footprint?</button>
+            <button class="chip" onclick="sendPrompt('What\'s my biggest emission source this month?')">📊 What's my biggest emission source this month?</button>
+            <button class="chip" onclick="sendPrompt('Compare bus vs electric car')">🚌 Compare bus vs electric car</button>
+          </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-msg user">
+            <div class="msg-bubble user-bubble">
+              I noticed my electricity footprint jumped yesterday. What caused that and what simple steps can I take?
+            </div>
+            <span class="msg-time">14:24</span>
+          </div>
+
+          <div class="chat-msg assistant">
+            <div class="msg-avatar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <div>
+              <div class="msg-bubble assistant-bubble">
+                <p>Your electricity footprint was <strong>3.10 kg CO₂e</strong> yesterday (approx. 8.2 kWh), which is <span class="estimate-tag">~28% higher</span> than your weekday average of 2.42 kg CO₂e. This is primarily attributed to your evening HVAC cooling cycle.</p>
+                <div class="source-block">
+                  <div class="source-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span>Cooling: 4.5 kWh (~1.70 kg CO₂e)</span>
+                    <span class="estimate-tag">Estimate</span>
+                  </div>
+                  <p style="color:#475569;font-size:13px;margin:4px 0 0">Active 17:30–22:15 · 54.8% of daily energy load</p>
+                </div>
+                <div class="micro-list">
+                  <p class="micro-title">Targeted Micro-Mitigations:</p>
+                  <p>1. Adjust thermostat by -1°C: Yields a measurable 7% reduction in compressor demand.</p>
+                  <p>2. Shift heavy appliances: Run dishwasher and washing machine during regional off-peak green hours (before 4:00 AM).</p>
+                </div>
+                <div class="sources-row">
+                  <span class="source-chip">DEFRA 2023 Grid Factors ↗</span>
+                  <span class="source-chip">EPA eGRID 2023 Data ↗</span>
+                  <span class="source-chip">IEA Residential Guidelines ↗</span>
+                </div>
+              </div>
+              <span class="msg-time">PlanetPulse AI · 14:24</span>
+            </div>
+          </div>
+
+          <div class="chat-msg user">
+            <div class="msg-bubble user-bubble">
+              How does that compare to driving 25 km in a petrol car?
+            </div>
+            <span class="msg-time">14:26</span>
+          </div>
+
+          <div class="chat-msg assistant">
+            <div class="msg-avatar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <div>
+              <div class="msg-bubble assistant-bubble">
+                <p>Driving 25 km in an average petrol car generates <strong>4.80 kg CO₂e</strong>. That means your entire day of electricity (3.10 kg CO₂e) is actually 35% less carbon-intensive than that single 25 km drive!</p>
+                <div class="compare-table">
+                  <div class="compare-header">
+                    <span>Comparative Carbon Load</span>
+                    <span>Net Difference: -1.70 kg CO₂e</span>
+                  </div>
+                  <div class="compare-row">
+                    <div class="compare-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>
+                      Petrol Vehicle (25 km)
+                    </div>
+                    <div class="compare-bar-track">
+                      <div class="compare-bar-fill" style="width:100%;background:#FECACA"></div>
+                    </div>
+                    <span class="compare-val">4.80 kg</span>
+                  </div>
+                  <div class="compare-row">
+                    <div class="compare-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                      Full Day Home Electricity (8.2 kWh)
+                    </div>
+                    <div class="compare-bar-track">
+                      <div class="compare-bar-fill" style="width:65%;background:#BBF7D0"></div>
+                    </div>
+                    <span class="compare-val">3.10 kg</span>
+                  </div>
+                </div>
+                <p style="color:#475569;font-size:13px;margin-top:8px">💡 Perspective: Skipping 1 roundtrip car commute offsets ~3 days of typical household energy emissions.</p>
+              </div>
+              <span class="msg-time">PlanetPulse AI · 14:26</span>
+            </div>
+          </div>
+
+          <div id="typing-indicator" class="chat-msg assistant hidden">
+            <div class="msg-avatar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <div class="msg-bubble assistant-bubble typing-bubble">
+              <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-area">
+          <div class="chat-input-wrap">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Ask about your emissions, recipes, travel alternatives…" onkeydown="handleChatKey(event)" />
+            <div class="chat-input-actions">
+              <button class="chat-icon-btn" aria-label="Voice input">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+              <button class="chat-send-btn" onclick="sendChatMessage()" aria-label="Send">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+          <p class="chat-footer">🔒 Private &amp; Anonymized &nbsp;·&nbsp; Press Enter to calculate</p>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="ai-sidebar">
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">Your Telemetry Snapshot <span class="live-badge">Live</span></div>
+          <div class="sidebar-metrics">
+            <div class="sidebar-metric"><span class="sm-label">Month-to-Date</span><span class="sm-value">142.4 kg CO₂e</span><span class="sm-change green-change">↓ 12.4% vs Sept</span></div>
+            <div class="sidebar-metric"><span class="sm-label">Budget Target</span><span class="sm-value">210.0 kg CO₂e</span><span class="sm-change muted-change">68% consumed</span></div>
+          </div>
+        </div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">Quick What-If Scenarios</div>
+          <div class="sidebar-scenarios">
+            <div class="scenario-item" onclick="navigateTo('whatif')">
+              <div class="scenario-text">Switch 2 commute days to Rail</div>
+              <div class="scenario-saving">-18.4 kg/wk</div>
+            </div>
+            <div class="scenario-item" onclick="navigateTo('whatif')">
+              <div class="scenario-text">Adopt Plant-Based Weekdays</div>
+              <div class="scenario-saving">-11.2 kg/wk</div>
+            </div>
+            <div class="scenario-item" onclick="navigateTo('whatif')">
+              <div class="scenario-text">Smart Power Strip for Office</div>
+              <div class="scenario-saving">-3.8 kg/wk</div>
+            </div>
+          </div>
+          <button class="btn-pill btn-outline btn-sm" style="width:100%;margin-top:12px" onclick="navigateTo('whatif')">Run Custom Simulation →</button>
+        </div>
+        <div class="sidebar-card integrity-card">
+          <div class="integrity-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="sidebar-card-header" style="margin-bottom:4px">Scientific Integrity Guarantee</div>
+            <p style="font-size:13px;color:#475569;margin:0">All conversational conversions are backed by peer-reviewed IPCC AR6 factors and regional grid carbon intensity APIs updated hourly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SCREEN 5: HISTORY ========== -->
+  <section id="screen-history" class="screen">
+    <div class="screen-header">
+      <h1 class="screen-title">Activity History</h1>
+      <p class="screen-subtitle">All your logged activities. Filter by category or date range.</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-row">
+      <div class="filter-chips">
+        <button class="filter-chip active" onclick="filterHistory('all',this)">All</button>
+        <button class="filter-chip" onclick="filterHistory('travel',this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>
+          Travel
+        </button>
+        <button class="filter-chip" onclick="filterHistory('food',this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+          Food
+        </button>
+        <button class="filter-chip" onclick="filterHistory('electricity',this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Electricity
+        </button>
+      </div>
+      <div class="date-range">
+        <input type="date" class="form-input date-input" id="date-from" placeholder="From" />
+        <span style="color:#475569">–</span>
+        <input type="date" class="form-input date-input" id="date-to" placeholder="To" />
+      </div>
+    </div>
+
+    <!-- Desktop Table -->
+    <div class="history-table-wrap">
+      <table class="history-table" id="history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Activity</th>
+            <th>Quantity</th>
+            <th>CO₂e</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="history-tbody">
+          <tr data-cat="travel">
+            <td>24 Sep 2026</td>
+            <td><span class="cat-badge cat-travel-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>Travel</span></td>
+            <td>Car (Petrol)</td>
+            <td>25 km</td>
+            <td class="td-emission">4.80 kg</td>
+            <td><button class="delete-btn" onclick="confirmDelete(this)" aria-label="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></td>
+          </tr>
+          <tr data-cat="electricity">
+            <td>24 Sep 2026</td>
+            <td><span class="cat-badge cat-elec-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Electricity</span></td>
+            <td>Grid Electricity</td>
+            <td>8.2 kWh</td>
+            <td class="td-emission">3.10 kg</td>
+            <td><button class="delete-btn" onclick="confirmDelete(this)" aria-label="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></td>
+          </tr>
+          <tr data-cat="food">
+            <td>24 Sep 2026</td>
+            <td><span class="cat-badge cat-food-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Food</span></td>
+            <td>Beef Burrito</td>
+            <td>300 g</td>
+            <td class="td-emission">1.20 kg</td>
+            <td><button class="delete-btn" onclick="confirmDelete(this)" aria-label="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></td>
+          </tr>
+          <tr data-cat="travel">
+            <td>23 Sep 2026</td>
+            <td><span class="cat-badge cat-travel-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>Travel</span></td>
+            <td>Bus</td>
+            <td>15 km</td>
+            <td class="td-emission">0.90 kg</td>
+            <td><button class="delete-btn" onclick="confirmDelete(this)" aria-label="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></td>
+          </tr>
+          <tr data-cat="food">
+            <td>23 Sep 2026</td>
+            <td><span class="cat-badge cat-food-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Food</span></td>
+            <td>Chicken (grilled)</td>
+            <td>200 g</td>
+            <td class="td-emission">0.60 kg</td>
+            <td><button class="delete-btn" onclick="confirmDelete(this)" aria-label="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile Cards -->
+    <div class="history-mobile-cards" id="history-mobile-cards">
+      <div class="hm-card" data-cat="travel">
+        <div class="hm-top"><span class="cat-badge cat-travel-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>Travel</span><span class="hm-date">24 Sep</span></div>
+        <div class="hm-activity">Car (Petrol) · 25 km</div>
+        <div class="hm-bottom"><span class="hm-emission">4.80 kg CO₂e</span><button class="delete-btn" onclick="confirmDelete(this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
+      </div>
+      <div class="hm-card" data-cat="electricity">
+        <div class="hm-top"><span class="cat-badge cat-elec-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Electricity</span><span class="hm-date">24 Sep</span></div>
+        <div class="hm-activity">Grid Electricity · 8.2 kWh</div>
+        <div class="hm-bottom"><span class="hm-emission">3.10 kg CO₂e</span><button class="delete-btn" onclick="confirmDelete(this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
+      </div>
+      <div class="hm-card" data-cat="food">
+        <div class="hm-top"><span class="cat-badge cat-food-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Food</span><span class="hm-date">24 Sep</span></div>
+        <div class="hm-activity">Beef Burrito · 300 g</div>
+        <div class="hm-bottom"><span class="hm-emission">1.20 kg CO₂e</span><button class="delete-btn" onclick="confirmDelete(this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
+      </div>
+    </div>
+
+    <!-- Empty State (hidden) -->
+    <div class="empty-state hidden" id="empty-state">
+      <div class="empty-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#BBF7D0" stroke-width="1.5"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+      </div>
+      <h2 class="empty-title">No activities yet</h2>
+      <p class="empty-subtitle">Add your first activity to start tracking your carbon footprint.</p>
+      <button class="btn-pill btn-primary" onclick="navigateTo('add')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add First Activity
+      </button>
+    </div>
+  </section>
+
+  <!-- ========== SCREEN 6: METHODOLOGY ========== -->
+  <section id="screen-methodology" class="screen">
+    <div class="screen-header">
+      <h1 class="screen-title">Methodology &amp; Sources</h1>
+      <p class="screen-subtitle">How PlanetPulse calculates your carbon footprint.</p>
+    </div>
+
+    <div class="methodology-layout">
+      <div class="method-main">
+        <!-- Core Formula -->
+        <div class="method-card">
+          <h2 class="method-section-title">Core Calculation Formula</h2>
+          <div class="formula-box">
+            <span class="formula">CO₂e = Quantity × Emission Factor</span>
+          </div>
+          <p class="method-text">Every emission estimate in PlanetPulse is computed using this deterministic formula. The quantity you enter (e.g., kilometers driven, grams of food consumed, kWh of electricity used) is multiplied by a peer-reviewed emission factor from a trusted scientific source.</p>
+        </div>
+
+        <!-- AI Role Callout -->
+        <div class="integrity-callout">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14532D" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div>
+            <strong>Carbon calculations are deterministic. AI only explains results; it never calculates them.</strong>
+            <p>The AI assistant in PlanetPulse provides natural-language explanations, comparisons, and recommendations — but every CO₂e number you see is calculated by our verified calculation engine using published emission factors, not by the AI model.</p>
+          </div>
+        </div>
+
+        <!-- Emission Factors Table -->
+        <div class="method-card">
+          <h2 class="method-section-title">Emission Factors Reference</h2>
+          <div class="ef-table-wrap">
+            <table class="ef-table">
+              <thead>
+                <tr>
+                  <th>Activity</th>
+                  <th>Factor</th>
+                  <th>Unit</th>
+                  <th>Source</th>
+                  <th>Version / Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Car (petrol, avg)</td><td class="ef-factor">0.192</td><td>kg CO₂e / km</td><td><span class="source-chip">DEFRA ↗</span></td><td>v2.0, Mar 2023</td></tr>
+                <tr><td>Car (diesel, avg)</td><td class="ef-factor">0.171</td><td>kg CO₂e / km</td><td><span class="source-chip">DEFRA ↗</span></td><td>v2.0, Mar 2023</td></tr>
+                <tr><td>Bus (local)</td><td class="ef-factor">0.102</td><td>kg CO₂e / km</td><td><span class="source-chip">DEFRA ↗</span></td><td>v2.0, Mar 2023</td></tr>
+                <tr><td>Train (national rail)</td><td class="ef-factor">0.0355</td><td>kg CO₂e / km</td><td><span class="source-chip">DEFRA ↗</span></td><td>v2.0, Mar 2023</td></tr>
+                <tr><td>Electric Vehicle</td><td class="ef-factor">0.053</td><td>kg CO₂e / km</td><td><span class="source-chip">EPA eGRID ↗</span></td><td>2023</td></tr>
+                <tr><td>Flight (economy)</td><td class="ef-factor">0.255</td><td>kg CO₂e / km</td><td><span class="source-chip">ICAO ↗</span></td><td>2023</td></tr>
+                <tr><td>Beef</td><td class="ef-factor">27.0</td><td>kg CO₂e / kg food</td><td><span class="source-chip">Poore &amp; Nemecek ↗</span></td><td>Science, 2018</td></tr>
+                <tr><td>Chicken</td><td class="ef-factor">6.90</td><td>kg CO₂e / kg food</td><td><span class="source-chip">Poore &amp; Nemecek ↗</span></td><td>Science, 2018</td></tr>
+                <tr><td>Pork</td><td class="ef-factor">12.1</td><td>kg CO₂e / kg food</td><td><span class="source-chip">Poore &amp; Nemecek ↗</span></td><td>Science, 2018</td></tr>
+                <tr><td>Vegetarian meal</td><td class="ef-factor">2.50</td><td>kg CO₂e / kg food</td><td><span class="source-chip">Our World in Data ↗</span></td><td>2022</td></tr>
+                <tr><td>Vegan meal</td><td class="ef-factor">1.10</td><td>kg CO₂e / kg food</td><td><span class="source-chip">Our World in Data ↗</span></td><td>2022</td></tr>
+                <tr><td>Grid electricity (UK avg)</td><td class="ef-factor">0.233</td><td>kg CO₂e / kWh</td><td><span class="source-chip">National Grid ESO ↗</span></td><td>2023 Q3</td></tr>
+                <tr><td>Grid electricity (US avg)</td><td class="ef-factor">0.386</td><td>kg CO₂e / kWh</td><td><span class="source-chip">EPA eGRID ↗</span></td><td>2023</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Uncertainty Note -->
+        <div class="method-card">
+          <h2 class="method-section-title">Uncertainty &amp; Estimates</h2>
+          <div class="amber-banner" style="margin-bottom:16px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Figures marked "Estimate" carry ±15–25% uncertainty depending on regional grid mix, vehicle load, and food provenance.
+          </div>
+          <p class="method-text">PlanetPulse uses global average emission factors where regional data is unavailable. For more accurate results, connect your smart meter or enter your regional electricity tariff in Settings. All emission factors are reviewed annually and updated when new IPCC or DEFRA data is published.</p>
+        </div>
+      </div>
+
+      <!-- Sidebar TOC -->
+      <div class="method-toc">
+        <div class="toc-card">
+          <h3 class="toc-title">On This Page</h3>
+          <ul class="toc-list">
+            <li><a href="#" class="toc-link">Core Formula</a></li>
+            <li><a href="#" class="toc-link">AI vs Calculation Engine</a></li>
+            <li><a href="#" class="toc-link">Emission Factors Table</a></li>
+            <li><a href="#" class="toc-link">Uncertainty &amp; Estimates</a></li>
+            <li><a href="#" class="toc-link">Scope 1, 2 &amp; 3</a></li>
+            <li><a href="#" class="toc-link">Data Sources</a></li>
+          </ul>
+        </div>
+        <div class="toc-card">
+          <h3 class="toc-title">External Sources</h3>
+          <div class="ext-links">
+            <a href="#" class="ext-link">DEFRA Emission Factors ↗</a>
+            <a href="#" class="ext-link">EPA eGRID 2023 ↗</a>
+            <a href="#" class="ext-link">IPCC AR6 Report ↗</a>
+            <a href="#" class="ext-link">Poore &amp; Nemecek 2018 ↗</a>
+            <a href="#" class="ext-link">Our World in Data ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ===== DELETE CONFIRMATION MODAL ===== -->
+<div class="modal-overlay hidden" id="delete-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+    </div>
+    <h2 class="modal-title" id="modal-title">Delete Activity?</h2>
+    <p class="modal-subtitle">This action cannot be undone. The activity will be permanently removed from your history.</p>
+    <div class="modal-actions">
+      <button class="btn-pill btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn-pill btn-danger" onclick="deleteConfirmed()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

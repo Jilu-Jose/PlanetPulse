@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "categories": {
+    "travel": {
+      "car": {
+        "label": "Car",
+        "factor": "0.20",
+        "unit": "km",
+        "source": "Code2Career Track 2 official brief",
+        "source_url": null,
+        "status": "official_brief"
+      },
+      "bus": {
+        "label": "Bus",
+        "factor": "0.08",
+        "unit": "km",
+        "source": "Code2Career Track 2 official brief",
+        "source_url": null,
+        "status": "official_brief"
+      },
+      "flight": {
+        "label": "Flight",
+        "factor": "0.25",
+        "unit": "km",
+        "source": "Code2Career Track 2 official brief",
+        "source_url": null,
+        "status": "official_brief"
+      }
+    },
+    "energy": {
+      "electricity": {
+        "label": "Electricity",
+        "factor": "0.80",
+        "unit": "kWh",
+        "source": "Code2Career Track 2 official brief",
+        "source_url": null,
+        "status": "official_brief"
+      }
+    },
+    "food": {
+      "veg_meal": {
+        "label": "Vegetarian Meal",
+        "factor": "0.5",
+        "unit": "meal",
+        "source": "Code2Career Track 2 official brief",
+        "source_url": null,
+        "status": "official_brief"
+      },
+      "non_veg_meal": {
+        "label": "Non-Vegetarian Meal",
+        "factor": "2.0",
+        "unit": "meal",
+        "source": "Code2Career Track 2 official brief",
+        "source_url": null,
+        "status": "official_brief"
+      }
+    }
+  }
+}

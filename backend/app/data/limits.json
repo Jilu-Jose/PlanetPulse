@@ -1,0 +1,32 @@
+{
+  "car": {
+    "soft": 500,
+    "hard": 3000,
+    "hard_message": "{quantity} {unit} is more than 12 times around the Earth. The maximum for one car entry is {hard} {unit}. Please check the value."
+  },
+  "bus": {
+    "soft": 300,
+    "hard": 2000,
+    "hard_message": "The maximum for one bus entry is {hard} {unit}. Please check the value."
+  },
+  "flight": {
+    "soft": 10000,
+    "hard": 20000,
+    "hard_message": "{quantity} {unit} is more than half the Earth's circumference. The maximum for one flight entry is {hard} {unit}. Please check the value."
+  },
+  "electricity": {
+    "soft": 500,
+    "hard": 10000,
+    "hard_message": "The maximum for one electricity entry is {hard} {unit}. Please check the value."
+  },
+  "veg_meal": {
+    "soft": 6,
+    "hard": 20,
+    "hard_message": "The maximum for one meal entry is {hard}. Please check the value."
+  },
+  "non_veg_meal": {
+    "soft": 6,
+    "hard": 20,
+    "hard_message": "The maximum for one meal entry is {hard}. Please check the value."
+  }
+}

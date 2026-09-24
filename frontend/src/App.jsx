@@ -36,6 +36,9 @@ function App() {
 
           {/* Center Links */}
           <div className="nav-links">
+            <NavLink to="/landing" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+              Home
+            </NavLink>
             <NavLink to="/dashboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
               Dashboard
             </NavLink>

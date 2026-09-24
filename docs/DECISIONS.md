@@ -1,5 +1,29 @@
 # Architecture Decisions (Hackathon Track 2)
 
+## Standard API Declaration
+
+**Yes, we implemented the standard REST API for Track 2.**
+
+All five required features are fully testable via HTTP without any UI interaction. A grading script can assess every feature using the following endpoints (all require `x-session-id` header; `x-timezone` is optional, defaults to UTC):
+
+| Feature | Method | Endpoint | Key Response Fields |
+|---|---|---|---|
+| Log Activity | `POST` | `/api/activities` | `id`, `co2e_kg`, `formula_string` |
+| CO₂ Calculation | — | *(returned inline with every log)* | `co2e_kg`, `formula_string`, `emission_factor_str` |
+| Dashboard | `GET` | `/api/dashboard?range=week` | `total_co2e_kg`, `categories`, `top_contributors`, `trend` |
+| Weekly Target (set) | `PUT` | `/api/target` | `target_kg`, `effective_week_start` |
+| Weekly Target (progress) | `GET` | `/api/target/progress` | `status`, `percent_used`, `used_kg`, `remaining_kg`, `suggestion` |
+| History & Filter | `GET` | `/api/activities?types=car,bus&date_from=YYYY-MM-DD&date_to=YYYY-MM-DD` | `items[]`, `total`, `total_kg` |
+
+Decision Points are also API-observable:
+- **DP1 (Nudge):** `GET /api/target/progress` → `status: "on_track" | "approaching" | "exceeded"` + `suggestion` object
+- **DP2 (Absurd Input):** `POST /api/activities` → HTTP `409` (soft limit, needs `confirm_unusual: true`) or HTTP `422` (hard reject)
+- **DP3 (The Week):** All progress responses include `week_start` (Monday) and `week_end` (Sunday) in ISO 8601 format
+
+**Live API base URL:** `https://planetpulse-f86t.onrender.com/api`
+
+---
+
 ## Known Decisions
 
 1. **Deterministic Engine vs LLM Calculation**

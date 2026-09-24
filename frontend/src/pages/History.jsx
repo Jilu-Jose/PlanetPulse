@@ -213,6 +213,11 @@ export default function History({ refreshKey }) {
                         {TYPE_LABELS[act.activity_type] || act.activity_type}
                         {act.flagged_unusual && <span className="badge badge-gray" style={{ background: '#FEF3C7', color: '#92400E', fontSize: '0.65rem' }}>unusual</span>}
                       </span>
+                      {act.entry_method && act.entry_method !== 'form' && (
+                        <div style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '0.2rem', marginLeft: '1.5rem' }}>
+                          via {act.entry_method}
+                        </div>
+                      )}
                     </td>
                     <td style={{ padding: '1rem 1.25rem', fontWeight: 600 }}>{act.quantity} {act.unit}</td>
                     <td style={{ padding: '1rem 1.25rem' }}>

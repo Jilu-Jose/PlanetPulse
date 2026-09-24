@@ -32,6 +32,9 @@ class Activity(Base):
     
     # DP2 requirement
     flagged_unusual: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    
+    # Phase 8A
+    entry_method: Mapped[str] = mapped_column(String(16), nullable=False, default="form")
 
     occurred_on: Mapped[date] = mapped_column(Date, nullable=False)
     created_at: Mapped[datetime] = mapped_column(

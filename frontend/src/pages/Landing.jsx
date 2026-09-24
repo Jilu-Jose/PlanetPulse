@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+ï»¿import { useNavigate } from "react-router-dom";
 import { Leaf, ArrowRight, Car, Utensils, Zap, Plane, Star, CheckCircle, TrendingDown, BarChart3, Sparkles, ChevronRight, Bus, Shield, Globe, Target } from "lucide-react";
 import heroPhone from "../assets/hero-phone.png";
 import heroLifestyle from "../assets/hero-lifestyle.png";
@@ -41,7 +41,7 @@ export default function Landing() {
         <div style={{ maxWidth:"1200px", margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:"4rem", alignItems:"flex-end" }}>
           <div style={{ paddingBottom:"5rem" }}>
             <div style={{ display:"inline-flex", alignItems:"center", gap:"0.5rem", background:"#EAF3EC", border:"1px solid #BBF7D0", borderRadius:"9999px", padding:"0.35rem 1rem", fontSize:"0.78rem", fontWeight:700, color:"#2F5D44", marginBottom:"2rem" }}>
-              <Leaf size={13} /> Track 2 · Climate Tech · Hackathon 2026
+              <Leaf size={13} /> Track 2 Â· Climate Tech Â· Hackathon 2026
             </div>
             <h1 style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"clamp(2.5rem, 5vw, 3.8rem)", fontWeight:800, lineHeight:1.1, marginBottom:"1.5rem", letterSpacing:"-0.02em" }}>
               Turn everyday<br/>decisions into<br/><span style={{ color:"#2F5D44" }}>measurable<br/>climate impact.</span>
@@ -60,7 +60,7 @@ export default function Landing() {
             <div style={{ display:"flex", alignItems:"center", gap:"1rem", fontSize:"0.8rem", color:"#6B7280" }}>
               {[1,2,3,4,5].map(i => <Star key={i} size={13} fill="#F59E0B" color="#F59E0B" />)}
               <span style={{ fontWeight:600 }}>4.9/5</span>
-              <span>· Open-source engine · No account required</span>
+              <span>Â· Open-source engine Â· No account required</span>
             </div>
           </div>
           <div style={{ position:"relative", height:"520px", display:"flex", alignItems:"flex-end" }}>

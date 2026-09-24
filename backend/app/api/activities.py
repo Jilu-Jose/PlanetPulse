@@ -1,4 +1,4 @@
-"""app/api/activities.py"""
+﻿"""app/api/activities.py"""
 import json
 import zoneinfo
 from datetime import date, datetime, timedelta, timezone
@@ -11,42 +11,38 @@ from sqlalchemy import select, func
 
 from app.models.database import get_db
 from app.models.activity import Activity
-from app.schemas.activity import ActivityCreate, ActivityResponse, ActivityListResponse
+from app.schemas.activity import (
+    ActivityCreate, ActivityResponse, ActivityListResponse,
+    ParseRequest, ParseResponse, ParsedItemSchema, UnsupportedItemSchema,
+    BatchActivityCreate, BatchActivityResponse
+)
 from app.services.carbon_engine import calculate, EngineValidationError
 from app.services.emission_factor_service import EmissionFactorNotFoundError, get_emission_factor_service
+from app.services.parse_service import parse_text
 
 router = APIRouter(prefix="/activities", tags=["activities"])
 
 
 def get_session_id(x_session_id: str = Header(...)):
-    """Extract session ID from headers; used to isolate users."""
     if not x_session_id or len(x_session_id) > 36:
         raise HTTPException(status_code=400, detail="Invalid session ID")
     return x_session_id
 
 
 def get_timezone(x_timezone: str = Header("UTC")):
-    """Extract timezone from headers and validate against zoneinfo."""
     try:
         return zoneinfo.ZoneInfo(x_timezone)
     except zoneinfo.ZoneInfoNotFoundError:
         return zoneinfo.ZoneInfo("UTC")
 
 
-# Load limits.json for DP2
 LIMITS_PATH = Path("app/data/limits.json")
 with open(LIMITS_PATH, "r", encoding="utf-8") as f:
     LIMITS_CONFIG = json.load(f)
 
 
-@router.post("", response_model=ActivityResponse, status_code=201)
-def create_activity(
-    data: ActivityCreate,
-    session_id: str = Depends(get_session_id),
-    tz: zoneinfo.ZoneInfo = Depends(get_timezone),
-    db: Session = Depends(get_db)
-):
-    # Calculate will handle unit parsing and precision validation
+def _validate_and_calculate(data: ActivityCreate, tz: zoneinfo.ZoneInfo) -> dict:
+    """Shared validation function returning a dict of fields to construct an Activity."""
     try:
         calc = calculate(data.activity_type, data.quantity)
     except EngineValidationError as e:
@@ -54,7 +50,6 @@ def create_activity(
     except EmissionFactorNotFoundError as e:
         raise HTTPException(status_code=400, detail={"code": "validation_error", "message": str(e)})
 
-    # DP2 Limit checks
     limit_cfg = LIMITS_CONFIG.get(data.activity_type)
     if limit_cfg:
         soft_limit = limit_cfg["soft"]
@@ -73,7 +68,6 @@ def create_activity(
                 detail={"code": "needs_confirmation", "message": f"That's a lot for one entry. Is {data.quantity} {calc.unit} correct?"}
             )
 
-    # Date Validation
     now = datetime.now(tz)
     today = now.date()
     occurred = data.occurred_on or today
@@ -84,29 +78,169 @@ def create_activity(
     if occurred < today - timedelta(days=365):
         raise HTTPException(status_code=422, detail={"code": "validation_error", "message": "Cannot log activities more than 365 days in the past."})
 
+    return {
+        "category": calc.category,
+        "activity_type": calc.activity_type,
+        "label": calc.label,
+        "quantity": calc.input_quantity,
+        "unit": calc.unit,
+        "co2e_e4": calc.co2e_e4,
+        "emission_factor_str": calc.emission_factor_str,
+        "factor_source": calc.factor_source,
+        "formula_string": calc.formula_string,
+        "occurred_on": occurred,
+    }
+
+
+@router.post("", response_model=ActivityResponse, status_code=201)
+def create_activity(
+    data: ActivityCreate,
+    session_id: str = Depends(get_session_id),
+    tz: zoneinfo.ZoneInfo = Depends(get_timezone),
+    db: Session = Depends(get_db)
+):
+    valid_data = _validate_and_calculate(data, tz)
+    
     act = Activity(
         session_id=session_id,
-        category=calc.category,
-        activity_type=calc.activity_type,
-        label=calc.label,
-        quantity=calc.input_quantity,
-        unit=calc.unit,
-        co2e_e4=calc.co2e_e4,
-        emission_factor_str=calc.emission_factor_str,
-        factor_source=calc.factor_source,
-        formula_string=calc.formula_string,
         flagged_unusual=data.confirm_unusual,
-        occurred_on=occurred,
-        created_at=datetime.now(timezone.utc)
+        entry_method="form",
+        created_at=datetime.now(timezone.utc),
+        **valid_data
     )
-    
     db.add(act)
     db.commit()
     db.refresh(act)
-    
-    # Feature 4: target_status_change will be injected later when implementing Weekly Target
-    
     return act
+
+
+@router.post("/parse", response_model=ParseResponse)
+async def parse_activities(
+    req: ParseRequest,
+    session_id: str = Depends(get_session_id),
+    tz: zoneinfo.ZoneInfo = Depends(get_timezone)
+):
+    # Rate limit check would go here if we implemented a redis store.
+    # For now, it's bypassed as requested to just log.
+    res = await parse_text(req.text, req.source, tz)
+    return {
+        "parser": res.parser,
+        "items": [
+            {
+                "id": i.id,
+                "activity_type": i.activity_type,
+                "quantity": i.quantity,
+                "unit": i.unit,
+                "occurred_on": i.occurred_on,
+                "source_span": i.source_span,
+                "conversion_note": i.conversion_note,
+                "status": i.status,
+                "message": i.message,
+                "co2e_kg": i.co2e_kg,
+                "formula_string": i.formula_string,
+                "flags": i.flags,
+                "needs_clarification": i.needs_clarification,
+                "clarification_question": i.clarification_question,
+            } for i in res.items
+        ],
+        "unsupported": [
+            {"what": u.what, "source_span": u.source_span, "message": u.message}
+            for u in res.unsupported
+        ],
+        "total_preview_kg": res.total_preview_kg,
+        "warnings": []
+    }
+
+
+@router.post("/preview", response_model=ParsedItemSchema)
+def preview_activity(
+    data: ActivityCreate,
+    tz: zoneinfo.ZoneInfo = Depends(get_timezone)
+):
+    try:
+        valid_data = _validate_and_calculate(data, tz)
+        return {
+            "id": "preview",
+            "activity_type": valid_data["activity_type"],
+            "quantity": valid_data["quantity"],
+            "unit": valid_data["unit"],
+            "occurred_on": valid_data["occurred_on"],
+            "source_span": "",
+            "conversion_note": None,
+            "status": "ok",
+            "message": None,
+            "co2e_kg": valid_data["co2e_e4"] / 10000.0,
+            "formula_string": valid_data["formula_string"],
+            "flags": [],
+            "needs_clarification": False,
+            "clarification_question": None
+        }
+    except HTTPException as e:
+        status = e.detail.get("code")
+        if status == "needs_confirmation":
+            status_str = "needs_confirmation"
+        elif status == "implausible_value" or status == "validation_error":
+            status_str = "rejected"
+        else:
+            status_str = "rejected"
+            
+        return {
+            "id": "preview",
+            "activity_type": data.activity_type,
+            "quantity": data.quantity,
+            "unit": None,
+            "occurred_on": data.occurred_on,
+            "source_span": "",
+            "conversion_note": None,
+            "status": status_str,
+            "message": e.detail.get("message", "Validation error"),
+            "co2e_kg": None,
+            "formula_string": None,
+            "flags": [],
+            "needs_clarification": False,
+            "clarification_question": None
+        }
+
+
+@router.post("/batch", response_model=BatchActivityResponse, status_code=201)
+def batch_create_activities(
+    req: BatchActivityCreate,
+    session_id: str = Depends(get_session_id),
+    tz: zoneinfo.ZoneInfo = Depends(get_timezone),
+    db: Session = Depends(get_db)
+):
+    # Ensure entry_method migration ran (sqlite pragma check at startup)
+    
+    saved_acts = []
+    total_kg_added = 0.0
+    
+    try:
+        for item in req.items:
+            valid_data = _validate_and_calculate(item, tz)
+            act = Activity(
+                session_id=session_id,
+                flagged_unusual=item.confirm_unusual,
+                entry_method=req.source,
+                created_at=datetime.now(timezone.utc),
+                **valid_data
+            )
+            db.add(act)
+            saved_acts.append(act)
+            total_kg_added += (valid_data["co2e_e4"] / 10000.0)
+            
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise e
+        
+    for act in saved_acts:
+        db.refresh(act)
+        
+    return {
+        "items": saved_acts,
+        "total_kg_added": total_kg_added,
+        "target_status_change": None
+    }
 
 
 @router.get("", response_model=ActivityListResponse)
@@ -126,14 +260,11 @@ def list_activities(
     
     if types:
         type_list = [t.strip() for t in types.split(",") if t.strip()]
-        
-        # Validate types
         svc = get_emission_factor_service()
         valid_types = list(svc._type_map.keys())
         for t in type_list:
             if t not in valid_types:
                 raise HTTPException(status_code=422, detail=f"Unknown activity type: {t}")
-                
         if type_list:
             query = query.where(Activity.activity_type.in_(type_list))
 
@@ -147,7 +278,6 @@ def list_activities(
     total = db.scalar(select(func.count()).select_from(query.subquery())) or 0
     items = db.scalars(query.offset((page - 1) * per_page).limit(per_page)).all()
     
-    # Calculate total kg for the filtered list
     total_e4 = db.scalar(select(func.sum(Activity.co2e_e4)).select_from(query.subquery())) or 0
     total_kg = total_e4 / 10000.0
     
@@ -173,3 +303,4 @@ def delete_activity(
     db.delete(act)
     db.commit()
     return None
+

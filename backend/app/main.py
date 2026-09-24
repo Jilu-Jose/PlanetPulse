@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.models.database import init_db
 from app.services.emission_factor_service import get_emission_factor_service
-from app.api import meta, activities, dashboard, target
+from app.api import meta, activities, dashboard, target, map
 # from app.api import what_if, ai
 
 logging.basicConfig(level=logging.INFO)
@@ -66,5 +66,6 @@ app.include_router(meta.router, prefix="/api")
 app.include_router(activities.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(target.router, prefix="/api")
+app.include_router(map.router)
 # app.include_router(what_if.router, prefix="/api")
 # app.include_router(ai.router, prefix="/api")

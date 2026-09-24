@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { addActivity, fetchMeta } from '../api';
 import {
   Car, Bus, Plane, Zap, Leaf, Beef,
-  CheckCircle2, AlertCircle, AlertTriangle, Calculator
+  CheckCircle2, AlertCircle, AlertTriangle, Calculator, Wand2
 } from 'lucide-react';
+import QuickLogCard from '../components/QuickLogCard';
+import ReviewPanel from '../components/ReviewPanel';
+import { addActivity, fetchMeta, parseActivities, batchLogActivities } from '../api';
 
 const ACTIVITY_META = {
   car:          { icon: <Car size={22}/>,   label: 'Car',                 category: 'travel', unit: 'km',   desc: 'Passenger car trip' },
@@ -29,6 +31,18 @@ export default function AddActivity({ onActivityAdded }) {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState(null); // { message }
+  
+  // Phase 8A Tab State
+  const [activeTab, setActiveTab] = useState('quick'); // 'quick' | 'form'
+  
+  // Phase 8A Quick Log state
+  const [isParsing, setIsParsing] = useState(false);
+  const [isSubmittingQuick, setIsSubmittingQuick] = useState(false);
+  const [parsedItems, setParsedItems] = useState([]);
+  const [unsupportedItems, setUnsupportedItems] = useState([]);
+  const [totalPreviewKg, setTotalPreviewKg] = useState(0);
+  const [showReview, setShowReview] = useState(false);
+  const [quickLogSource, setQuickLogSource] = useState('text');
 
   const meta = ACTIVITY_META[activityType];
 
@@ -68,12 +82,92 @@ export default function AddActivity({ onActivityAdded }) {
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '680px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1.5rem' }}>
         <h1 className="page-title">Record New Activity</h1>
         <p className="page-subtitle">Log a travel, energy or food activity to track your carbon footprint.</p>
       </div>
 
-      <form className="card" onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem' }}>
+        <button 
+          onClick={() => setActiveTab('quick')}
+          className={`flex items-center gap-2 pb-2 px-2 transition-colors relative font-semibold ${activeTab === 'quick' ? 'text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
+        >
+          <Wand2 size={18} /> Quick log
+          {activeTab === 'quick' && <div className="absolute bottom-[-9px] left-0 right-0 h-[3px] bg-emerald-600 rounded-t-full"></div>}
+        </button>
+        <button 
+          onClick={() => setActiveTab('form')}
+          className={`flex items-center gap-2 pb-2 px-2 transition-colors relative font-semibold ${activeTab === 'form' ? 'text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
+        >
+          <Calculator size={18} /> Manual form
+          {activeTab === 'form' && <div className="absolute bottom-[-9px] left-0 right-0 h-[3px] bg-emerald-600 rounded-t-full"></div>}
+        </button>
+      </div>
+
+      {activeTab === 'quick' && (
+        <div style={{ marginBottom: '2rem' }}>
+          {!showReview ? (
+            <QuickLogCard onParse={async (text, source) => {
+              setIsParsing(true);
+              setQuickLogSource(source);
+              try {
+                const res = await parseActivities(text, source);
+                setParsedItems(res.items);
+                setUnsupportedItems(res.unsupported);
+                setTotalPreviewKg(res.total_preview_kg);
+                setShowReview(true);
+              } catch (err) {
+                alert(`Parsing failed: ${err.message}`);
+              } finally {
+                setIsParsing(false);
+              }
+            }} isParsing={isParsing} />
+          ) : (
+            <ReviewPanel
+              items={parsedItems}
+              unsupported={unsupportedItems}
+              totalKg={totalPreviewKg}
+              onUpdateItem={(id, updatedItem) => {
+                setParsedItems(prev => prev.map(i => i.id === id ? updatedItem : i));
+                setTotalPreviewKg(parsedItems.reduce((acc, curr) => {
+                  const item = curr.id === id ? updatedItem : curr;
+                  return acc + (item.co2e_kg && (item.status === 'ok' || item.status === 'needs_confirmation') ? item.co2e_kg : 0);
+                }, 0));
+              }}
+              onRemoveItem={(id) => setParsedItems(prev => prev.filter(i => i.id !== id))}
+              onConfirm={async () => {
+                setIsSubmittingQuick(true);
+                try {
+                  const itemsToLog = parsedItems.filter(i => (i.status === 'ok' || (i.status === 'needs_confirmation' && i.confirm_unusual)) && i.co2e_kg !== null);
+                  if (itemsToLog.length === 0) return setShowReview(false);
+                  
+                  const payload = itemsToLog.map(i => ({
+                    activity_type: i.activity_type,
+                    quantity: i.quantity,
+                    occurred_on: i.occurred_on,
+                    confirm_unusual: !!i.confirm_unusual
+                  }));
+                  
+                  await batchLogActivities(payload, quickLogSource);
+                  
+                  setShowReview(false);
+                  setParsedItems([]);
+                  if (onActivityAdded) onActivityAdded();
+                } catch (err) {
+                  alert(`Failed to log activities: ${err.message}`);
+                } finally {
+                  setIsSubmittingQuick(false);
+                }
+              }}
+              onCancel={() => setShowReview(false)}
+              isSubmitting={isSubmittingQuick}
+            />
+          )}
+        </div>
+      )}
+
+      {activeTab === 'form' && (
+        <form className="card" onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
 
         {/* Activity Selector */}
         {CATEGORY_ORDER.map(cat => (
@@ -166,6 +260,7 @@ export default function AddActivity({ onActivityAdded }) {
           <Calculator size={18}/> {submitting ? 'Calculating…' : 'Calculate & Log Activity'}
         </button>
       </form>
+      )}
 
       {/* DP2 Confirmation Dialog */}
       {confirmDialog && (
@@ -241,6 +336,8 @@ export default function AddActivity({ onActivityAdded }) {
           </button>
         </div>
       )}
+      
+      {/* End form content block */}
     </div>
   );
 }

@@ -3,6 +3,9 @@ import { fetchDashboard } from '../api';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, PieChart, Pie, Cell } from 'recharts';
 import { TrendingDown, Activity, Car, Utensils, Zap, Sparkles, AlertCircle, RefreshCw, Leaf } from 'lucide-react';
 import WeeklyTargetCard from '../components/WeeklyTargetCard';
+import QuickLogCard from '../components/QuickLogCard';
+import ReviewPanel from '../components/ReviewPanel';
+import { parseActivities, batchLogActivities } from '../api';
 
 const COLORS = ['#448963', '#71B28C', '#B5966B'];
 
@@ -10,7 +13,15 @@ export default function Dashboard({ refreshKey }) {
   const [data, setData] = useState(null);
   const [range, setRange] = useState('week');
   const [loading, setLoading] = useState(true);
-  const [targetRefresh, setTargetRefresh] = useState(0);
+  
+  // Phase 8A Quick Log state
+  const [isParsing, setIsParsing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [parsedItems, setParsedItems] = useState([]);
+  const [unsupportedItems, setUnsupportedItems] = useState([]);
+  const [totalPreviewKg, setTotalPreviewKg] = useState(0);
+  const [showReview, setShowReview] = useState(false);
+  const [quickLogSource, setQuickLogSource] = useState('text');
 
   useEffect(() => {
     let mounted = true;
@@ -46,6 +57,62 @@ export default function Dashboard({ refreshKey }) {
     return <Activity size={20} />;
   };
   const targetProgress = data.weekly_target_progress;
+
+  const handleParse = async (text, source) => {
+    setIsParsing(true);
+    setQuickLogSource(source);
+    try {
+      const res = await parseActivities(text, source);
+      setParsedItems(res.items);
+      setUnsupportedItems(res.unsupported);
+      setTotalPreviewKg(res.total_preview_kg);
+      setShowReview(true);
+    } catch (err) {
+      alert(`Parsing failed: ${err.message}`);
+    } finally {
+      setIsParsing(false);
+    }
+  };
+
+  const handleUpdateItem = (id, updatedItem) => {
+    setParsedItems(prev => prev.map(i => i.id === id ? updatedItem : i));
+    setTotalPreviewKg(parsedItems.reduce((acc, curr) => {
+      const item = curr.id === id ? updatedItem : curr;
+      return acc + (item.co2e_kg && (item.status === 'ok' || item.status === 'needs_confirmation') ? item.co2e_kg : 0);
+    }, 0));
+  };
+
+  const handleRemoveItem = (id) => {
+    setParsedItems(prev => prev.filter(i => i.id !== id));
+  };
+
+  const handleConfirmLog = async () => {
+    setIsSubmitting(true);
+    try {
+      const itemsToLog = parsedItems.filter(i => (i.status === 'ok' || (i.status === 'needs_confirmation' && i.confirm_unusual)) && i.co2e_kg !== null);
+      if (itemsToLog.length === 0) {
+        setShowReview(false);
+        return;
+      }
+      
+      const payload = itemsToLog.map(i => ({
+        activity_type: i.activity_type,
+        quantity: i.quantity,
+        occurred_on: i.occurred_on,
+        confirm_unusual: !!i.confirm_unusual
+      }));
+      
+      await batchLogActivities(payload, quickLogSource);
+      
+      setShowReview(false);
+      setParsedItems([]);
+      setRange(r => r); // Force refresh
+    } catch (err) {
+      alert(`Failed to log activities: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="animate-fade-in">
@@ -113,6 +180,24 @@ export default function Dashboard({ refreshKey }) {
              </div>
            )}
         </div>
+      </div>
+
+      {/* Phase 8A Quick Log */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        {!showReview ? (
+          <QuickLogCard onParse={handleParse} isParsing={isParsing} />
+        ) : (
+          <ReviewPanel
+            items={parsedItems}
+            unsupported={unsupportedItems}
+            totalKg={totalPreviewKg}
+            onUpdateItem={handleUpdateItem}
+            onRemoveItem={handleRemoveItem}
+            onConfirm={handleConfirmLog}
+            onCancel={() => setShowReview(false)}
+            isSubmitting={isSubmitting}
+          />
+        )}
       </div>
 
       {/* Weekly Target Card — Feature 4 (prominent at top) */}

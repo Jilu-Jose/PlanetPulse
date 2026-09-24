@@ -7,9 +7,10 @@ import AddActivity from './pages/AddActivity';
 import WhatIf from './pages/WhatIf';
 import AskAI from './pages/AskAI';
 import Landing from './pages/Landing';
+import History from './pages/History';
+import MapTab from './components/MapTab';
 
 // Mock empty pages for links in the mockup
-const History = () => <div className="animate-fade-in"><h1 className="page-title">History</h1></div>;
 const Methodology = () => <div className="animate-fade-in"><h1 className="page-title">Methodology</h1></div>;
 
 function App() {
@@ -50,6 +51,9 @@ function App() {
             <NavLink to="/history" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
               History
             </NavLink>
+            <NavLink to="/map" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+              Map
+            </NavLink>
             <NavLink to="/methodology" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
               Methodology
             </NavLink>
@@ -83,6 +87,7 @@ function App() {
             <Route path="/what-if" element={<WhatIf />} />
             <Route path="/ask" element={<AskAI />} />
             <Route path="/history" element={<History />} />
+            <Route path="/map" element={<MapTab />} />
             <Route path="/methodology" element={<Methodology />} />
           </Routes>
         </main>

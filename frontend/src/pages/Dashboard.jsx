@@ -14,6 +14,7 @@ export default function Dashboard({ refreshKey }) {
   const [data, setData] = useState(null);
   const [range, setRange] = useState('week');
   const [loading, setLoading] = useState(true);
+  const [refreshCounter, setRefreshCounter] = useState(0);
   
   // Phase 8A Quick Log state
   const [isParsing, setIsParsing] = useState(false);
@@ -37,7 +38,7 @@ export default function Dashboard({ refreshKey }) {
       if (mounted) setLoading(false);
     });
     return () => { mounted = false; };
-  }, [range, refreshKey]);
+  }, [range, refreshKey, refreshCounter]);
 
   const pieData = useMemo(() => {
     if (!data) return [];
@@ -107,7 +108,7 @@ export default function Dashboard({ refreshKey }) {
       
       setShowReview(false);
       setParsedItems([]);
-      setRange(r => r); // Force refresh
+      setRefreshCounter(c => c + 1); // Force refresh
     } catch (err) {
       alert(`Failed to log activities: ${err.message}`);
     } finally {
@@ -205,7 +206,7 @@ export default function Dashboard({ refreshKey }) {
       <div style={{marginBottom: '1.5rem'}}>
         <WeeklyTargetCard
           progress={targetProgress}
-          onRefresh={() => setRange(r => r)}
+          onRefresh={() => setRefreshCounter(c => c + 1)}
         />
       </div>
 

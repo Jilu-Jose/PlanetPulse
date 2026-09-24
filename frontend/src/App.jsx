@@ -11,7 +11,7 @@ import Landing from './pages/Landing';
 import History from './pages/History';
 import MapTab from './components/MapTab';
 
-const Methodology = () => <div className="animate-fade-in"><h1 className="page-title">Methodology</h1></div>;
+import Methodology from './pages/Methodology';
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);

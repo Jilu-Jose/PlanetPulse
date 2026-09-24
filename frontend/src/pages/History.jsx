@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchActivities, deleteActivity } from '../api';
 import { Trash2, Car, Bus, Plane, Zap, Leaf, Beef, AlertTriangle, FilterX, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
+import { HistorySkeleton } from '../components/PageSkeleton';
 
 const TYPE_ICONS = {
   car: <Car size={16}/>, bus: <Bus size={16}/>, flight: <Plane size={16}/>,
@@ -105,6 +106,8 @@ export default function History({ refreshKey }) {
   };
 
   const totalPages = data ? Math.ceil(data.total / PER_PAGE) : 1;
+
+  if (loading && !data) return <HistorySkeleton />;
 
   return (
     <div className="animate-fade-in">

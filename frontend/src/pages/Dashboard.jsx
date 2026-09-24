@@ -5,6 +5,7 @@ import { TrendingDown, Activity, Car, Utensils, Zap, Sparkles, AlertCircle, Refr
 import WeeklyTargetCard from '../components/WeeklyTargetCard';
 import QuickLogCard from '../components/QuickLogCard';
 import ReviewPanel from '../components/ReviewPanel';
+import { DashboardSkeleton } from '../components/PageSkeleton';
 import { parseActivities, batchLogActivities } from '../api';
 
 const COLORS = ['#448963', '#71B28C', '#B5966B'];
@@ -47,7 +48,7 @@ export default function Dashboard({ refreshKey }) {
     }));
   }, [data]);
 
-  if (loading) return <div style={{padding: '2rem'}}>Loading telemetry...</div>;
+  if (loading) return <DashboardSkeleton />;
   if (!data) return <div>Error loading data</div>;
 
   const getIcon = (cat) => {

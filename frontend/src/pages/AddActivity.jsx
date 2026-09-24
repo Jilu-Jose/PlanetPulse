@@ -81,7 +81,7 @@ export default function AddActivity({ onActivityAdded }) {
   }, {});
 
   return (
-    <div className="animate-fade-in" style={{ maxWidth: '680px', margin: '0 auto' }}>
+    <div className="animate-fade-in" style={{ maxWidth: '900px', margin: '0 auto' }}>
       <div style={{ marginBottom: '1.5rem' }}>
         <h1 className="page-title">Record New Activity</h1>
         <p className="page-subtitle">Log a travel, energy or food activity to track your carbon footprint.</p>
@@ -179,7 +179,10 @@ export default function AddActivity({ onActivityAdded }) {
       )}
 
       {activeTab === 'form' && (
-        <form className="card" onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'flex-start', marginBottom: '2rem' }}>
+
+        {/* Left Column: Activity Selector */}
+        <div className="card" style={{ flex: '1 1 350px', padding: '1.5rem' }}>
 
         {/* Activity Selector */}
         {CATEGORY_ORDER.map(cat => (
@@ -210,8 +213,22 @@ export default function AddActivity({ onActivityAdded }) {
             </div>
           </div>
         ))}
+        </div>
 
-        {/* Selected info */}
+        {/* Right Column: Inputs and Submit */}
+        <div style={{ flex: '1 1 300px', position: 'sticky', top: '2rem' }}>
+          
+          <div className="card" style={{ padding: '1.5rem', border: '1px solid var(--color-mint-border)' }}>
+            {/* Informational Tip */}
+            <div style={{ display: 'flex', gap: '0.75rem', paddingBottom: '1.25rem', marginBottom: '1.25rem', borderBottom: '1px solid #E5E7EB' }}>
+              <div style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: '0.5rem', borderRadius: '50%', height: 'fit-content' }}>
+                <CheckCircle2 size={18}/>
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '0.9rem', color: 'var(--color-text-main)' }}>Deterministic Arithmetic</h4>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>Calculations use peer-reviewed emission factors. Your data stays private and immutable.</p>
+              </div>
+            </div>
         <div style={{
           background: 'var(--color-primary-light)', border: '1px solid var(--color-mint-border)',
           borderRadius: '12px', padding: '0.75rem 1rem', marginBottom: '1.5rem',
@@ -271,6 +288,8 @@ export default function AddActivity({ onActivityAdded }) {
         <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1.25rem', fontSize: '1rem' }} disabled={submitting}>
           <Calculator size={18}/> {submitting ? 'Calculating…' : 'Calculate & Log Activity'}
         </button>
+        </div>
+      </div>
       </form>
       )}
 

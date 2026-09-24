@@ -24,8 +24,9 @@ PlanetPulse is a climate-tech web app that turns everyday travel, energy, and fo
 - **React 18** (Vite)
 - **React Router DOM** (Client-side routing)
 - **Recharts** (Dashboard visualization)
-- **Leaflet & React-Leaflet** (Map integration)
-- **Vanilla CSS** (Custom responsive design system)
+- **Leaflet & React-Leaflet** (Map integration with Datameet GeoJSON borders)
+- **Vanilla CSS** (Custom responsive design system with CSS Variables & Keyframe animations)
+- **Lucide React** (Vector Icons)
 
 **Backend:**
 - **FastAPI** (Python web framework)
@@ -33,7 +34,7 @@ PlanetPulse is a climate-tech web app that turns everyday travel, energy, and fo
 - **SQLite** (Database)
 - **Pydantic** (Schema validation)
 - **Rank-BM25** (RAG Knowledge Base indexing)
-- **Groq API** (Llama 3 inference for AI chatbot)
+- **Groq API** (Llama-3.1-8b inference for AI chatbot & unstructured text/voice log parsing)
 
 ---
 
@@ -108,9 +109,13 @@ Calculation Formula: `CO₂e (kg) = Quantity * Emission Factor`
 ---
 
 ## ✅ Required Features & Decision Points
-* All five required features (Log Activity, CO₂ Calculation, Dashboard, Weekly Target, History & Filter) are fully implemented.
-* The three Decision Points (DP1: The Nudge, DP2: Absurd Input, DP3: The Week) are documented in `docs/DECISIONS.md`.
-* Refer to `docs/REQUIRED_FEATURES.md` for full implementation details mapping.
+* **Core Requirements:** All five required features (Log Activity, CO₂ Calculation, Dashboard, Weekly Target, History & Filter) are fully implemented.
+* **Decision Points:** The three Decision Points (DP1: The Nudge, DP2: Absurd Input, DP3: The Week) are handled perfectly and documented in `docs/DECISIONS.md`.
+* **Advanced Features:** 
+  * **Quick Log (Voice & Text):** Uses Llama-3.1-8b to parse natural language ("I drove 20km to work") and voice inputs into structured carbon logs.
+  * **What-If Simulator:** Pre-compute the greener choice (e.g. Car vs Bus) to see the exact CO₂ delta *before* making a decision.
+  * **Ask AI:** A RAG-powered chatbot that can answer questions about your data and general carbon knowledge using BM25 and Llama-3.1-8b.
+  * **Map Tab:** See how your footprint compares to regional averages across India using live interactive maps with GeoJSON boundaries.
 
 ---
 

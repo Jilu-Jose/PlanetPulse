@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Leaf, ArrowRight, Car, Utensils, Zap, Plane, Star, CheckCircle, TrendingDown, BarChart3, Sparkles, ChevronRight, Bus, Shield, Globe, Target } from "lucide-react";
 import heroPhone from "../assets/hero-phone.png";
 import heroLifestyle from "../assets/hero-lifestyle.png";
@@ -34,7 +34,7 @@ export default function Landing() {
   const navigate = useNavigate();
   const S = { btn: (bg, color, extra) => ({ display:"inline-flex", alignItems:"center", gap:"0.5rem", background:bg, color:color, border:"none", borderRadius:"9999px", padding:"0.9rem 2rem", fontSize:"1rem", fontWeight:700, cursor:"pointer", ...extra }) };
   return (
-    <div style={{ fontFamily:"Inter, sans-serif", color:"#1C2822", overflowX:"hidden", margin:"-2.5rem -2rem" }}>
+    <div className="animate-fade-in" style={{ fontFamily:"Inter, sans-serif", color:"#1C2822", overflowX:"hidden", margin:"-2.5rem -2rem" }}>
 
       {/* HERO */}
       <section style={{ background:"linear-gradient(160deg, #f9f7f3 0%, #eaf3ec 60%, #d4ede0 100%)", padding:"5rem 2rem 0", position:"relative", overflow:"hidden" }}>
@@ -64,10 +64,10 @@ export default function Landing() {
             </div>
           </div>
           <div style={{ position:"relative", height:"520px", display:"flex", alignItems:"flex-end" }}>
-            <div style={{ position:"absolute", right:0, bottom:0, width:"75%", borderRadius:"20px 20px 0 0", overflow:"hidden", boxShadow:"0 20px 60px rgba(0,0,0,0.12)" }}>
+            <div className="animate-floating-delayed" style={{ position:"absolute", right:0, bottom:0, width:"75%", borderRadius:"20px 20px 0 0", overflow:"hidden", boxShadow:"0 20px 60px rgba(0,0,0,0.12)" }}>
               <img src={heroLifestyle} alt="Lifestyle" style={{ width:"100%", height:"380px", objectFit:"cover", display:"block" }} />
             </div>
-            <div style={{ position:"absolute", left:0, bottom:"80px", width:"55%", borderRadius:"20px", overflow:"hidden", boxShadow:"0 30px 80px rgba(0,0,0,0.18)", border:"3px solid white" }}>
+            <div className="animate-floating" style={{ position:"absolute", left:0, bottom:"80px", width:"55%", borderRadius:"20px", overflow:"hidden", boxShadow:"0 30px 80px rgba(0,0,0,0.18)", border:"3px solid white" }}>
               <img src={heroPhone} alt="App on phone" style={{ width:"100%", height:"300px", objectFit:"cover", display:"block" }} />
             </div>
             <div style={{ position:"absolute", top:"20px", right:"20px", background:"white", borderRadius:"16px", padding:"0.75rem 1.25rem", boxShadow:"0 8px 30px rgba(0,0,0,0.1)", display:"flex", alignItems:"center", gap:"0.75rem", zIndex:10 }}>

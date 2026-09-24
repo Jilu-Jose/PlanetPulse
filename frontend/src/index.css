@@ -452,6 +452,20 @@ h1, h2, h3, h4, h5, h6 {
   animation: fadeIn 0.4s ease-out forwards;
 }
 
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-floating {
+  animation: floating 6s ease-in-out infinite;
+}
+
+.animate-floating-delayed {
+  animation: floating 7s ease-in-out 1.5s infinite;
+}
+
 /* Custom Scrollbar for Chat */
 ::-webkit-scrollbar {
   width: 6px;

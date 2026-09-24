@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import AddActivity from './pages/AddActivity';
 import WhatIf from './pages/WhatIf';
 import AskAI from './pages/AskAI';
+import Landing from './pages/Landing';
 
 // Mock empty pages for links in the mockup
 const History = () => <div className="animate-fade-in"><h1 className="page-title">History</h1></div>;
@@ -24,7 +25,7 @@ function App() {
 
         <nav className="navbar">
           {/* Left Brand */}
-          <NavLink to="/" className="nav-brand">
+          <NavLink to="/landing" className="nav-brand">
             <div style={{background: 'var(--color-primary-dark)', padding: '0.4rem', borderRadius: '8px', display: 'flex'}}>
               <Leaf size={20} color="white" />
             </div>
@@ -34,7 +35,7 @@ function App() {
 
           {/* Center Links */}
           <div className="nav-links">
-            <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+            <NavLink to="/dashboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
               Dashboard
             </NavLink>
             <NavLink to="/add" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
@@ -75,7 +76,9 @@ function App() {
 
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/landing" element={<Landing />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/add" element={<AddActivity />} />
             <Route path="/what-if" element={<WhatIf />} />
             <Route path="/ask" element={<AskAI />} />

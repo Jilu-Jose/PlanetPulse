@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchMeta, calculateWhatIf } from '../api';
-import { ArrowRight, Leaf, AlertTriangle, Car, Bus, Train, Bike, Sparkles, CheckCircle2, Zap } from 'lucide-react';
+import { ArrowRight, Leaf, AlertTriangle, Car, Bus, Train, Bike, Sparkles, CheckCircle2, Zap, TrendingDown } from 'lucide-react';
 
 export default function WhatIf() {
   const [meta, setMeta] = useState(null);
@@ -32,17 +32,17 @@ export default function WhatIf() {
   const getActs = (cat) => meta?.categories[cat] || [];
 
   const handleCompare = async () => {
-    if(!cCat || !cAct || !aCat || !aAct) return;
+    if(!cCat || !cAct) return;
     try {
       const data = await calculateWhatIf({
         current_category: cCat,
         current_activity: cAct,
         current_quantity: parseFloat(cQty),
         current_unit: cUnit,
-        alt_category: aCat,
-        alt_activity: aAct,
-        alt_quantity: parseFloat(aQty),
-        alt_unit: aUnit
+        alt_category: aCat || cCat,
+        alt_activity: aAct || cAct,
+        alt_quantity: parseFloat(aAct ? aQty : cQty),
+        alt_unit: aAct ? aUnit : cUnit
       });
       setResult(data);
     } catch (err) {
@@ -138,7 +138,7 @@ export default function WhatIf() {
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1rem'}}>
              <div>
                 <div className="label-sm" style={{marginBottom: '0.5rem', color: 'var(--color-primary-dark)'}}>SIMULATED EMISSIONS</div>
-                <div style={{fontSize: '2.5rem', fontWeight: 800, lineHeight: 1, color: 'var(--color-primary)'}}>{result ? result.alt_co2e_kg.toFixed(2) : '0.00'} <span style={{fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-muted)'}}>kg CO2e</span></div>
+                <div style={{fontSize: '2.5rem', fontWeight: 800, lineHeight: 1, color: 'var(--color-primary)'}}>{result && aAct ? result.alt_co2e_kg.toFixed(2) : '0.00'} <span style={{fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-muted)'}}>kg CO2e</span></div>
              </div>
              {result && result.saving_pct > 0 && <div className="badge badge-mint" style={{padding: '0.4rem 0.75rem', fontWeight: 700}}>↓ {result.saving_pct}% Saved</div>}
           </div>

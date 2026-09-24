@@ -28,7 +28,7 @@ class RAGService:
                 # Create a search document
                 doc_text = (
                     f"Category: {category}. Activity: {factor.activity_type}. "
-                    f"Label: {factor.label}. Description: {factor.description}. "
+                    f"Label: {factor.label}. "
                     f"Emission Factor: {factor.factor} {factor.unit}. "
                     f"Source: {factor.source} ({factor.source_year})."
                 )
@@ -108,6 +108,10 @@ RULES:
                 data = response.json()
                 answer = data["choices"][0]["message"]["content"]
                 return answer, sources
+        except httpx.HTTPStatusError as e:
+            logger.error(f"LLM API Error: {e}")
+            logger.error(f"Response text: {e.response.text}")
+            return "Sorry, I'm having trouble connecting to the AI brain right now. Please try again later.", sources
         except Exception as e:
             logger.error(f"LLM API Error: {e}")
             return "Sorry, I'm having trouble connecting to the AI brain right now. Please try again later.", sources

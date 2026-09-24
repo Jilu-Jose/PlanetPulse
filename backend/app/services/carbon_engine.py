@@ -111,3 +111,39 @@ def calculate(
         formula_string=formula,
         calculated_at=datetime.now(timezone.utc).isoformat(),
     )
+
+
+@dataclass
+class CompareResult:
+    current: CalculationResult
+    alt: CalculationResult
+    saving_kg: float
+    saving_pct: float
+
+
+def compare(
+    current_category: str,
+    current_activity: str,
+    current_quantity: float,
+    current_unit: str,
+    alt_category: str,
+    alt_activity: str,
+    alt_quantity: float,
+    alt_unit: str,
+) -> CompareResult:
+    current_res = calculate(current_activity, current_quantity)
+    alt_res = calculate(alt_activity, alt_quantity)
+
+    saving_kg = current_res.co2e_kg - alt_res.co2e_kg
+    
+    if current_res.co2e_kg > 0:
+        saving_pct = (saving_kg / current_res.co2e_kg) * 100.0
+    else:
+        saving_pct = 0.0
+
+    return CompareResult(
+        current=current_res,
+        alt=alt_res,
+        saving_kg=saving_kg,
+        saving_pct=round(saving_pct, 1)
+    )

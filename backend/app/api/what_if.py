@@ -20,10 +20,10 @@ def calculate_what_if(req: WhatIfRequest):
         raise HTTPException(status_code=400, detail=str(e))
         
     return WhatIfResponse(
-        current_co2e_kg=res.co2e_current,
-        alt_co2e_kg=res.co2e_alternative,
-        saving_kg=res.co2e_saving,
-        saving_pct=res.pct_saving,
-        current_formula=res.current_formula,
-        alt_formula=res.alternative_formula
+        current_co2e_kg=res.current.co2e_kg,
+        alt_co2e_kg=res.alt.co2e_kg,
+        saving_kg=res.saving_kg,
+        saving_pct=res.saving_pct,
+        current_formula=res.current.formula_string,
+        alt_formula=res.alt.formula_string
     )

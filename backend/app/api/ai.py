@@ -21,9 +21,10 @@ async def ask_ai(
     db: Session = Depends(get_db)
 ):
     # Calculate user's total footprint for context
-    total = db.scalar(
-        select(func.sum(Activity.co2e_kg)).where(Activity.session_id == session_id)
-    ) or 0.0
+    total_e4 = db.scalar(
+        select(func.sum(Activity.co2e_e4)).where(Activity.session_id == session_id)
+    ) or 0
+    total = total_e4 / 10000.0
 
     rag = get_rag_service()
     answer, sources = await rag.get_answer(req.question, total)

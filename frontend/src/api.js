@@ -1,4 +1,4 @@
-﻿export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 // â”€â”€â”€ Session & Headers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -125,13 +125,13 @@ export const batchLogActivities = (items, source = 'text') =>
 
 // --- Map API ---
 export async function fetchProfile() {
-  const res = await fetch(`${API_URL}/profile`, { headers: getHeaders() });
+  const res = await fetch(`${API_BASE_URL}/profile`, { headers: getHeaders() });
   if (!res.ok) throw await res.json();
   return res.json();
 }
 
 export async function updateProfile(region_id, share_to_map) {
-  const res = await fetch(`${API_URL}/profile/region`, {
+  const res = await fetch(`${API_BASE_URL}/profile/region`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify({ region_id, share_to_map }),
@@ -141,13 +141,13 @@ export async function updateProfile(region_id, share_to_map) {
 }
 
 export async function fetchMapRegions(offset = 0) {
-  const res = await fetch(`${API_URL}/map/regions?offset=${offset}`, { headers: getHeaders() });
+  const res = await fetch(`${API_BASE_URL}/map/regions?offset=${offset}`, { headers: getHeaders() });
   if (!res.ok) throw await res.json();
   return res.json();
 }
 
 export async function fetchMapMe() {
-  const res = await fetch(`${API_URL}/map/me`, { headers: getHeaders() });
+  const res = await fetch(`${API_BASE_URL}/map/me`, { headers: getHeaders() });
   if (!res.ok) throw await res.json();
   return res.json();
 }

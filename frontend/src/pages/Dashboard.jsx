@@ -231,11 +231,8 @@ export default function Dashboard({ refreshKey }) {
                 <div style={{height: '4px', background: 'var(--color-bg-subtle)', borderRadius: '2px', overflow: 'hidden', marginBottom: '0.75rem'}}>
                    <div style={{height: '100%', width: `${cat.percentage}%`, background: COLORS[idx], borderRadius: '2px'}}></div>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 500}}>
-                  <span style={{display: 'flex', alignItems: 'center', gap: '0.25rem'}}><RefreshCw size={10} /> Active tracking</span>
-                  <span style={{color: catName === 'travel' ? 'var(--color-error)' : 'var(--color-primary)'}}>
-                    {catName === 'travel' ? '+0.4 vs Mon' : '-0.8 vs avg'}
-                  </span>
+                <div style={{fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.25rem'}}>
+                  <RefreshCw size={10} /> Active tracking
                 </div>
               </div>
             </div>
@@ -349,43 +346,19 @@ export default function Dashboard({ refreshKey }) {
         </div>
 
         <div className="card" style={{background: 'var(--color-bg-subtle)', border: 'none'}}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem'}}>
-            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700}}>
-              <div style={{background: 'var(--color-primary)', color: 'white', padding: '0.25rem', borderRadius: '8px'}}><Sparkles size={16} /></div>
-              AI Insight & Tips
+          <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem'}}>
+            <div style={{background: 'var(--color-primary)', color: 'white', padding: '0.5rem', borderRadius: '10px'}}><Sparkles size={18} /></div>
+            <div>
+              <div style={{fontWeight: 700, fontSize: '1rem'}}>AI Climate Assistant</div>
+              <div style={{fontSize: '0.8rem', color: 'var(--color-text-muted)'}}>Ask anything about your footprint</div>
             </div>
-            <div className="badge badge-gray" style={{background: '#E5E7EB'}}>Synthesis</div>
           </div>
-          
-          <div style={{background: 'white', borderRadius: '16px', padding: '1.25rem', boxShadow: 'var(--shadow-sm)', marginBottom: '1.5rem'}}>
-             <div style={{display: 'flex', gap: '0.75rem', alignItems: 'flex-start'}}>
-                <Sparkles size={16} color="var(--color-primary)" style={{marginTop: '0.25rem', flexShrink: 0}} />
-                <div style={{fontSize: '0.9rem', lineHeight: 1.5, color: 'var(--color-text-main)'}}>
-                  Replacing your morning solo car commute with the express bus 3 times a week would reduce your monthly footprint by <strong style={{color: 'var(--color-primary-dark)'}}>39.6 kg CO2e</strong> (down <strong>18%</strong>).
-                </div>
-             </div>
-             <div style={{fontSize: '0.7rem', color: 'var(--color-text-muted)', marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.25rem'}}>
-                <AlertCircle size={12} /> Based on your activity + sourced IPCC & DEFRA knowledge base
-             </div>
-          </div>
-
-          <div style={{display: 'flex', gap: '1rem', marginBottom: '1.5rem'}}>
-             <div style={{flex: 1, background: 'white', padding: '1rem', borderRadius: '12px', boxShadow: 'var(--shadow-sm)'}}>
-                <div className="label-sm" style={{marginBottom: '0.25rem'}}>Simulated ROI</div>
-                <div style={{fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-primary-dark)'}}>-18.4%</div>
-                <div style={{fontSize: '0.75rem', color: 'var(--color-text-muted)'}}>Annualized trajectory</div>
-             </div>
-             <div style={{flex: 1, background: 'white', padding: '1rem', borderRadius: '12px', boxShadow: 'var(--shadow-sm)'}}>
-                <div className="label-sm" style={{marginBottom: '0.25rem'}}>Estimated Savings</div>
-                <div style={{fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-text-main)'}}>$124.00</div>
-                <div style={{fontSize: '0.75rem', color: 'var(--color-text-muted)'}}>Monthly fuel delta</div>
-             </div>
-          </div>
-
-          <div style={{display: 'flex', gap: '0.75rem'}}>
-             <button className="btn btn-primary" style={{flex: 1, padding: '0.75rem'}}><Sparkles size={16} /> Explain my footprint</button>
-             <button className="btn btn-light" style={{flex: 1, background: 'white', border: '1px solid #E5E7EB'}}>Ask a question</button>
-          </div>
+          <p style={{fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '1.5rem'}}>
+            Get personalised insights, reduction tips, and what-if comparisons powered by your real logged data.
+          </p>
+          <a href="/ask" style={{textDecoration: 'none'}}>
+            <button className="btn btn-primary" style={{width: '100%', padding: '0.75rem'}}><Sparkles size={16} /> Open AI Assistant</button>
+          </a>
         </div>
       </div>
     </div>

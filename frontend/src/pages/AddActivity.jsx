@@ -87,20 +87,32 @@ export default function AddActivity({ onActivityAdded }) {
         <p className="page-subtitle">Log a travel, energy or food activity to track your carbon footprint.</p>
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem' }}>
-        <button 
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', background: 'var(--color-bg-subtle)', padding: '0.35rem', borderRadius: '12px', width: 'fit-content' }}>
+        <button
           onClick={() => setActiveTab('quick')}
-          className={`flex items-center gap-2 pb-2 px-2 transition-colors relative font-semibold ${activeTab === 'quick' ? 'text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+            padding: '0.5rem 1.1rem', borderRadius: '9px', border: 'none', cursor: 'pointer',
+            fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.18s',
+            background: activeTab === 'quick' ? 'var(--color-primary-dark)' : 'transparent',
+            color: activeTab === 'quick' ? 'white' : 'var(--color-text-muted)',
+            boxShadow: activeTab === 'quick' ? '0 1px 6px rgba(47,93,68,0.18)' : 'none',
+          }}
         >
-          <Wand2 size={18} /> Quick log
-          {activeTab === 'quick' && <div className="absolute bottom-[-9px] left-0 right-0 h-[3px] bg-emerald-600 rounded-t-full"></div>}
+          <Wand2 size={16} /> Quick log
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('form')}
-          className={`flex items-center gap-2 pb-2 px-2 transition-colors relative font-semibold ${activeTab === 'form' ? 'text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+            padding: '0.5rem 1.1rem', borderRadius: '9px', border: 'none', cursor: 'pointer',
+            fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.18s',
+            background: activeTab === 'form' ? 'var(--color-primary-dark)' : 'transparent',
+            color: activeTab === 'form' ? 'white' : 'var(--color-text-muted)',
+            boxShadow: activeTab === 'form' ? '0 1px 6px rgba(47,93,68,0.18)' : 'none',
+          }}
         >
-          <Calculator size={18} /> Manual form
-          {activeTab === 'form' && <div className="absolute bottom-[-9px] left-0 right-0 h-[3px] bg-emerald-600 rounded-t-full"></div>}
+          <Calculator size={16} /> Manual form
         </button>
       </div>
 

@@ -64,10 +64,10 @@ export default function AskAI() {
   ];
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', gap: '2rem' }}>
+    <div className="animate-fade-in" style={{ display: 'flex', gap: '2rem', height: 'calc(100vh - 150px)' }}>
 
       {/* Main Chat Column */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
           <div>
@@ -114,7 +114,7 @@ export default function AskAI() {
         </div>
 
         {/* Chat History */}
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2rem', paddingBottom: '2rem', minHeight: '400px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2rem', paddingBottom: '2rem' }}>
 
           {messages.length === 0 && !loading && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, padding: '3rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
@@ -219,7 +219,7 @@ export default function AskAI() {
       </div>
 
       {/* Right Sidebar */}
-      <div style={{ width: '300px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ width: '300px', display: 'flex', flexDirection: 'column', gap: '1.5rem', overflowY: 'auto', paddingRight: '0.5rem' }}>
 
         <div className="card" style={{ background: 'var(--color-primary-light)', border: '1px solid var(--color-mint-border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>

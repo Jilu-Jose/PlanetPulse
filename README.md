@@ -1,6 +1,6 @@
 # PlanetPulse
 
-**Hackathon ID:** [PENDING]  
+**Hackathon ID:** AZIS-DQZ8PX  
 **Track:** Track 2 · Climate Tech  
 **Challenge:** "A carbon footprint tracker: turn daily choices into a visible carbon footprint."
 
@@ -131,5 +131,5 @@ Calculation Formula: `CO₂e (kg) = Quantity * Emission Factor`
 
 ---
 **TODO BEFORE SUBMISSION:**
-- [ ] Add Hackathon ID
+- [x] Add Hackathon ID
 - [ ] Record video

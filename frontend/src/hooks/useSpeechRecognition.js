@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export function useSpeechRecognition(options = {}) {
   const { lang = 'en-IN' } = options;
@@ -22,11 +22,18 @@ export function useSpeechRecognition(options = {}) {
       recognition.lang = lang;
 
       recognition.onresult = (event) => {
-        let currentTranscript = '';
+        let finalTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          currentTranscript += event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          }
         }
-        setTranscript((prev) => prev + (prev && currentTranscript ? ' ' : '') + currentTranscript.trim());
+        if (finalTranscript.trim()) {
+          setTranscript((prev) => prev + (prev ? ' ' : '') + finalTranscript.trim());
+          if (options.onResult) {
+            options.onResult(finalTranscript.trim());
+          }
+        }
       };
 
       recognition.onerror = (event) => {

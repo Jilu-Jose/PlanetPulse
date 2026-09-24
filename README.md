@@ -1,10 +1,99 @@
-﻿# PlanetPulse
+# PlanetPulse
 
-**Hackathon ID:** [PENDING]
+**Hackathon ID:** [PENDING]  
+**Track:** Track 2 · Climate Tech  
+**Challenge:** "A carbon footprint tracker: turn daily choices into a visible carbon footprint."
 
-PlanetPulse is a climate-tech web app that turns everyday travel, energy, and food choices into a visible personal carbon footprint (COâ‚‚e).
+PlanetPulse is a climate-tech web app that turns everyday travel, energy, and food choices into a visible personal carbon footprint (CO₂e).
 
-## Data Sources & Methodology
+---
+
+## 🌐 Live Demo & Test Credentials
+
+**Frontend (Vercel):** [https://frontend-eight-roan-vva5vbvmc7.vercel.app/](https://frontend-eight-roan-vva5vbvmc7.vercel.app/)  
+**Backend API (Render):** [https://planetpulse-f86t.onrender.com](https://planetpulse-f86t.onrender.com)
+
+**Test Credentials:** 
+* **No login required!** The application uses an anonymous session ID (`x-session-id`) stored in your browser's local storage. Simply visit the link to start logging activities as a unique user.
+
+---
+
+## 💻 Tech Stack
+
+**Frontend:**
+- **React 18** (Vite)
+- **React Router DOM** (Client-side routing)
+- **Recharts** (Dashboard visualization)
+- **Leaflet & React-Leaflet** (Map integration)
+- **Vanilla CSS** (Custom responsive design system)
+
+**Backend:**
+- **FastAPI** (Python web framework)
+- **SQLAlchemy** (ORM)
+- **SQLite** (Database)
+- **Pydantic** (Schema validation)
+- **Rank-BM25** (RAG Knowledge Base indexing)
+- **Groq API** (Llama 3 inference for AI chatbot)
+
+---
+
+## 🚀 How to Run Locally
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+
+### 1. Backend (FastAPI)
+Open a terminal and run the following commands:
+```bash
+cd backend
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+# Mac/Linux
+# source venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+**Environment Variables:** Create a `.env` file in the `backend` folder:
+```env
+LLM_API_KEY=your_groq_api_key
+LLM_BASE_URL=https://api.groq.com/openai/v1
+MODEL_NAME="llama-3.1-8b-instant"
+DATABASE_URL=sqlite:///./planetpulse.db
+CORS_ORIGINS=http://localhost:5173,http://localhost:4173
+PORT=8000
+```
+
+Start the server:
+```bash
+python -c "from app.models.database import init_db; init_db()"
+uvicorn app.main:app --reload --port 8000
+```
+
+### 2. Frontend (Vite/React)
+Open a new terminal and run:
+```bash
+cd frontend
+npm install
+```
+
+**Environment Variables:** Create a `.env` file in the `frontend` folder:
+```env
+VITE_API_URL=http://localhost:8000/api
+```
+
+Start the dev server:
+```bash
+npm run dev
+```
+Visit `http://localhost:5173` in your browser.
+
+---
+
+## 📊 Data Sources & Methodology
 
 ### Data Sources
 | Category | Data Source |
@@ -14,48 +103,21 @@ PlanetPulse is a climate-tech web app that turns everyday travel, energy, and fo
 ### Methodology
 PlanetPulse uses a deterministic calculation engine (`carbon_engine`). We rely on exact arithmetic via Python's `Decimal` type, rather than floating-point math, to ensure absolutely no float drift. Calculations are executed purely on the backend, ensuring precision and preventing tampering, and are returned as strings (and `co2e_e4` integers in the database).
 
-Calculation Formula: `COâ‚‚e (kg) = Quantity * Emission Factor`
+Calculation Formula: `CO₂e (kg) = Quantity * Emission Factor`
 
-## Required Features & Decision Points
-* All five required features (Log Activity, COâ‚‚ Calculation, Dashboard, Weekly Target, History & Filter) are fully implemented.
+---
+
+## ✅ Required Features & Decision Points
+* All five required features (Log Activity, CO₂ Calculation, Dashboard, Weekly Target, History & Filter) are fully implemented.
 * The three Decision Points (DP1: The Nudge, DP2: Absurd Input, DP3: The Week) are documented in `docs/DECISIONS.md`.
-* Refer to `docs/REQUIRED_FEATURES.md` for full details.
+* Refer to `docs/REQUIRED_FEATURES.md` for full implementation details mapping.
 
-## How to Run Locally
+---
 
-### Backend (FastAPI)
-```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-python -c "from app.models.database import init_db; init_db()"
-uvicorn app.main:app --reload
-```
-
-### Frontend (Vite/React)
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### AI Integration (Phase 8)
-PlanetPulse uses AI to generate actionable insights and footprint explanations.
-To enable AI features, create `backend/.env` with the following (we default to Groq):
-```env
-LLM_API_KEY=your_groq_api_key
-LLM_BASE_URL=https://api.groq.com/openai/v1
-MODEL_NAME="gpt OSS 120b"
-DATABASE_URL=sqlite:///./planetpulse.db
-CORS_ORIGINS=http://localhost:5173,http://localhost:4173
-PORT=8000
-```
-
-## Demo Script (3-4 Minutes)
+## 🎥 Demo Script (3-4 Minutes)
 
 1. **Log a car trip**: Go to "Add Activity", select Car, enter 10 km.
-2. **See the exact COâ‚‚**: A success modal displays "2.00 kg COâ‚‚" instantly.
+2. **See the exact CO₂**: A success modal displays "2.00 kg CO₂" instantly.
 3. **Dashboard breakdown**: Navigate to Dashboard, see the newly added amount reflected in total, per-category pie charts, and trend graph.
 4. **Set a target**: On the Dashboard, click "Set target" in the Weekly Target card. Set it to 15 kg.
 5. **Cross it and show the nudge**: Add a flight for 100 km (25 kg). See the instant Toast warning. On the Dashboard, observe the amber/red exceeded state, identifying the top contributor (Flight) and presenting an actionable swap suggestion (e.g. swapping car km for bus).
@@ -66,4 +128,3 @@ PORT=8000
 **TODO BEFORE SUBMISSION:**
 - [ ] Add Hackathon ID
 - [ ] Record video
-

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from 'react-leaflet';
+import React, { useState, useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap, GeoJSON } from 'react-leaflet';
 import { Settings, Info, TrendingDown, Users, AlertCircle, Share2 } from 'lucide-react';
 import { fetchProfile, updateProfile, fetchMapRegions, fetchMapMe } from '../api';
 
@@ -28,14 +28,67 @@ function getColor(val) {
   return '#34d399'; // Light Emerald
 }
 
+
+// India bounds: always fit full subcontinent
+const INDIA_BOUNDS = [[6.5, 68.0], [35.7, 97.5]];
+
 function MapUpdater({ mapData }) {
   const map = useMap();
   useEffect(() => {
-    if (mapData?.regions?.length > 0) {
-      map.fitBounds([[8.4, 68.7], [37.6, 97.2]]);
-    }
+    map.fitBounds(INDIA_BOUNDS, { padding: [10, 10] });
   }, [map, mapData]);
   return null;
+}
+
+// Draws India's border per Survey of India's official claimed territory
+// (includes J&K / PoK, Aksai Chin, Arunachal Pradesh)
+function IndiaBorder() {
+  const [geoData, setGeoData] = useState(null);
+
+  useEffect(() => {
+    // Primary: Datameet composite — follows Survey of India claimed boundary
+    const PRIMARY = 'https://raw.githubusercontent.com/datameet/maps/master/Country/india-composite.geojson';
+    // Fallback: simplified country outline
+    const FALLBACK = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson';
+
+    fetch(PRIMARY)
+      .then(r => {
+        if (!r.ok) throw new Error('primary failed');
+        return r.json();
+      })
+      .then(setGeoData)
+      .catch(() => {
+        // fallback: filter just India from the world countries dataset
+        fetch(FALLBACK)
+          .then(r => r.json())
+          .then(world => {
+            const india = {
+              ...world,
+              features: world.features.filter(
+                f => f.properties.ADMIN === 'India' || f.properties.name === 'India'
+              ),
+            };
+            setGeoData(india);
+          })
+          .catch(() => {}); // silently fail — map still works without border
+      });
+  }, []);
+
+  if (!geoData) return null;
+
+  return (
+    <GeoJSON
+      key="india-border"
+      data={geoData}
+      style={{
+        color: '#2F5D44',      // --color-primary-dark
+        weight: 2,
+        fillColor: 'transparent',
+        fillOpacity: 0,
+        opacity: 0.85,
+      }}
+    />
+  );
 }
 
 export default function MapTab() {
@@ -229,7 +282,11 @@ export default function MapTab() {
           
           <MapContainer 
             center={[20.5937, 78.9629]} 
-            zoom={5} 
+            zoom={5}
+            minZoom={4}
+            maxZoom={10}
+            maxBounds={[[6.0, 68.0], [37.5, 98.0]]}
+            maxBoundsViscosity={0.8}
             style={{ height: '100%', width: '100%' }}
             zoomControl={false}
           >
@@ -237,6 +294,7 @@ export default function MapTab() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            <IndiaBorder />
             <MapUpdater mapData={mapData} />
             
             {mapData?.regions.map(r => (

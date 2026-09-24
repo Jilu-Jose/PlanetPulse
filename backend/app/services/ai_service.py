@@ -59,7 +59,7 @@ class RAGService:
                 ))
         return sources
 
-    async def get_answer(self, question: str, user_footprint_kg: float) -> tuple[str, list[Source]]:
+    async def get_answer(self, question: str, user_footprint_kg: float, user_activities_context: str = "") -> tuple[str, list[Source]]:
         """Queries the LLM with the context to answer the question."""
         sources = self._search(question)
         
@@ -76,6 +76,7 @@ YOUR ONLY PURPOSE:
 
 USER CONTEXT:
 The user's current total logged carbon footprint is {user_footprint_kg:.2f} kg CO₂e.
+{user_activities_context}
 
 KNOWLEDGE BASE (use this to ground your answers):
 {context_str}

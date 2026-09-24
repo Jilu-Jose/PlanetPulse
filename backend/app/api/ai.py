@@ -26,8 +26,27 @@ async def ask_ai(
     ) or 0
     total = total_e4 / 10000.0
 
+    # Fetch breakdown by category
+    cat_totals = db.execute(
+        select(Activity.category, func.sum(Activity.co2e_e4))
+        .where(Activity.session_id == session_id)
+        .group_by(Activity.category)
+    ).all()
+    breakdown = ", ".join([f"{cat}: {val/10000.0:.2f} kg CO2e" for cat, val in cat_totals]) or "None"
+
+    # Fetch recent activities
+    recent = db.execute(
+        select(Activity.activity_type, Activity.quantity, Activity.unit, Activity.co2e_e4)
+        .where(Activity.session_id == session_id)
+        .order_by(Activity.created_at.desc())
+        .limit(15)
+    ).all()
+    recent_str = "; ".join([f"{r.activity_type} ({r.quantity} {r.unit}) -> {r.co2e_e4/10000.0:.2f} kg" for r in recent]) or "None"
+    
+    context_data = f"Category Totals: {breakdown}\nRecent Logged Activities (latest first): {recent_str}"
+
     rag = get_rag_service()
-    answer, sources = await rag.get_answer(req.question, total)
+    answer, sources = await rag.get_answer(req.question, total, context_data)
 
     status = "ok" if "AI is not configured" not in answer else "ai_unavailable"
 

@@ -133,7 +133,7 @@ export default function Dashboard({ refreshKey }) {
 
       {/* Main Header Card */}
       <div className="card" style={{marginBottom: '1.5rem'}}>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+        <div className="dashboard-header-row" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem'}}>
           <div>
             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem'}}>
                <Leaf size={16} color="var(--color-primary)" />
@@ -142,12 +142,12 @@ export default function Dashboard({ refreshKey }) {
             </div>
             
             <div className="label-sm" style={{marginBottom: '0.5rem'}}>TODAY'S TOTAL FOOTPRINT</div>
-            <div style={{fontSize: '3.5rem', fontWeight: 800, color: 'var(--color-text-main)', lineHeight: 1, letterSpacing: '-0.02em', display: 'flex', alignItems: 'baseline', gap: '0.5rem'}}>
+            <div style={{fontSize: 'clamp(2rem, 6vw, 3.5rem)', fontWeight: 800, color: 'var(--color-text-main)', lineHeight: 1, letterSpacing: '-0.02em', display: 'flex', alignItems: 'baseline', gap: '0.5rem', flexWrap: 'wrap'}}>
               {data.total_co2e_kg.toFixed(2)} <span style={{fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text-muted)'}}>kg CO2e</span>
             </div>
           </div>
           
-          <div style={{display: 'flex', background: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-pill)', padding: '0.25rem'}}>
+          <div style={{display: 'flex', background: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-pill)', padding: '0.25rem', flexShrink: 0}}>
             {['today', 'week', 'month'].map(r => (
               <button 
                 key={r}
@@ -171,7 +171,7 @@ export default function Dashboard({ refreshKey }) {
           </div>
         </div>
 
-        <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem'}}>
+        <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap'}}>
            <div className="badge badge-mint" style={{padding: '0.4rem 0.75rem'}}>
               <TrendingDown size={14} style={{marginRight: '0.25rem'}} />
               {data.comparison_vs_previous_pct > 0 ? '+' : ''}{data.comparison_vs_previous_pct?.toFixed(1)}% {data.comparison_label}
@@ -244,13 +244,13 @@ export default function Dashboard({ refreshKey }) {
 
       <div className="grid grid-cols-3" style={{marginBottom: '1.5rem'}}>
         {/* Chart */}
-        <div className="card" style={{gridColumn: 'span 2'}}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem'}}>
+        <div className="card" style={{gridColumn: 'span 2', minWidth: 0}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '0.75rem'}}>
             <div>
               <h3 style={{fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.25rem'}}>7-Day Footprint Trend</h3>
               <p style={{fontSize: '0.85rem', color: 'var(--color-text-muted)'}}>Normalized carbon trajectory against rolling 7.90 kg baseline</p>
             </div>
-            <div style={{display: 'flex', gap: '1rem', fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600}}>
+            <div style={{display: 'flex', gap: '1rem', fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600, flexShrink: 0}}>
               <span style={{display: 'flex', alignItems: 'center', gap: '0.25rem'}}><span style={{width:'12px', height:'3px', background:'var(--color-primary)'}}></span> Daily Total</span>
               <span style={{display: 'flex', alignItems: 'center', gap: '0.25rem'}}><span style={{width:'12px', height:'2px', borderTop:'2px dashed #9CA3AF'}}></span> Weekly Avg (7.9 kg)</span>
             </div>
@@ -313,7 +313,7 @@ export default function Dashboard({ refreshKey }) {
       </div>
 
       <div className="grid grid-cols-3">
-        <div className="card" style={{gridColumn: 'span 2'}}>
+        <div className="card" style={{gridColumn: 'span 2', minWidth: 0}}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem'}}>
             <div>
               <h3 style={{fontSize: '1.25rem', fontWeight: 700}}>Top Contributors</h3>

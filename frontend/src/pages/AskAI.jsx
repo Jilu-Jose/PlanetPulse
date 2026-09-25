@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { askAI } from '../api';
-import { Send, User, Loader2, Sparkles, AlertCircle, Leaf, BarChart2, Car, Zap, CheckCircle2, Paperclip, Mic, Lock } from 'lucide-react';
+import { Send, User, Loader2, Sparkles, AlertCircle, Leaf, BarChart2, Car, Zap, CheckCircle2, Mic, Lock } from 'lucide-react';
+import './AskAI.css';
 
 export default function AskAI() {
   const [messages, setMessages] = useState([]);
@@ -45,9 +46,7 @@ export default function AskAI() {
     }
   };
 
-  const handleSuggestion = (text) => {
-    setInput(text);
-  };
+  const handleSuggestion = (text) => setInput(text);
 
   const renderFormatting = (text) => {
     return text.split('**').map((part, i) =>
@@ -64,12 +63,13 @@ export default function AskAI() {
   ];
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', gap: '2rem', height: 'calc(100vh - 150px)' }}>
+    <div className="animate-fade-in askai-layout">
 
-      {/* Main Chat Column */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* ── Main Chat Column ─────────────────────────────────────────── */}
+      <div className="askai-chat">
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
             <div className="label-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.5rem', color: 'var(--color-primary)' }}>
               <Zap size={14} /> NEURAL ENVIRONMENTAL ENGINE V4.2
@@ -77,13 +77,14 @@ export default function AskAI() {
             <h1 className="page-title" style={{ color: 'var(--color-primary-dark)' }}>PlanetPulse Climate Assistant</h1>
             <p className="page-subtitle">Ask anything about your carbon data, sustainable switches, or emission factors.</p>
           </div>
-          <div className="badge badge-gray" style={{ background: '#E5E7EB' }}>
+          <div className="badge badge-gray" style={{ background: '#E5E7EB', flexShrink: 0 }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-text-muted)', marginRight: '0.5rem' }}></div>
             GHG Protocol Mode: Scope 1-3
           </div>
         </div>
 
-        <div style={{ background: 'var(--color-bg-base)', border: '1px solid #E5E7EB', borderRadius: '12px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        {/* AI status banner */}
+        <div style={{ background: 'var(--color-bg-base)', border: '1px solid #E5E7EB', borderRadius: '12px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.85rem' }}>
             <AlertCircle size={16} color="var(--color-text-muted)" />
             <div>
@@ -91,17 +92,15 @@ export default function AskAI() {
               <div style={{ color: 'var(--color-text-muted)', marginTop: '0.1rem' }}>If AI is unavailable, your carbon calculations remain fully functional.</div>
             </div>
           </div>
-          <div className="badge badge-mint" style={{ background: 'var(--color-primary-light)' }}>
+          <div className="badge badge-mint" style={{ background: 'var(--color-primary-light)', flexShrink: 0 }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-primary)', marginRight: '0.5rem' }}></div>
             Status: Operational
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <div className="label-sm">SUGGESTED EXPLORATION PROMPTS</div>
-        </div>
-
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+        {/* Suggestions */}
+        <div className="label-sm" style={{ marginBottom: '1rem' }}>SUGGESTED EXPLORATION PROMPTS</div>
+        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           {SUGGESTIONS.map((p, i) => (
             <div
               key={i}
@@ -114,10 +113,9 @@ export default function AskAI() {
         </div>
 
         {/* Chat History */}
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2rem', paddingBottom: '2rem' }}>
-
+        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2rem', paddingBottom: '1rem' }}>
           {messages.length === 0 && !loading && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, padding: '3rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, padding: '3rem 1rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
               <div style={{ background: 'var(--color-primary-light)', padding: '1.25rem', borderRadius: '50%', marginBottom: '1.25rem' }}>
                 <Leaf size={32} color="var(--color-primary-dark)" />
               </div>
@@ -129,14 +127,13 @@ export default function AskAI() {
           {messages.map((msg, i) => (
             <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
               <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', marginBottom: '0.25rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                {msg.role === 'user' ? 'You' : 'PlanetPulse AI'} - {msg.time}
+                {msg.role === 'user' ? 'You' : 'PlanetPulse AI'} — {msg.time}
                 {msg.badge && (
                   <span className="badge badge-gray" style={{ background: 'white', border: '1px solid #E5E7EB', fontSize: '0.65rem' }}>
                     <CheckCircle2 size={10} style={{ marginRight: '0.25rem' }} /> {msg.badge}
                   </span>
                 )}
               </div>
-
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', flexDirection: msg.role === 'user' ? 'row-reverse' : 'row', maxWidth: '85%' }}>
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0,
@@ -146,7 +143,6 @@ export default function AskAI() {
                 }}>
                   {msg.role === 'user' ? <User size={16} /> : <Leaf size={16} />}
                 </div>
-
                 <div style={{
                   padding: '1.25rem',
                   borderRadius: '16px',
@@ -160,8 +156,7 @@ export default function AskAI() {
                   lineHeight: 1.6
                 }}>
                   <div>{renderFormatting(msg.content)}</div>
-
-                  {(msg.rawSources) && (
+                  {msg.rawSources && (
                     <div style={{ marginTop: '1.5rem', borderTop: '1px solid #E5E7EB', paddingTop: '1rem' }}>
                       <div className="label-sm" style={{ marginBottom: '0.75rem' }}>VERIFIED METHODOLOGY CITATIONS</div>
                       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -191,46 +186,49 @@ export default function AskAI() {
         </div>
 
         {/* Input Bar */}
-        <div style={{ position: 'relative' }}>
+        <div style={{ paddingTop: '1rem' }}>
           <form onSubmit={handleSend} style={{ background: 'var(--color-bg-base)', border: '1px solid #E5E7EB', borderRadius: '24px', padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', boxShadow: 'var(--shadow-lg)' }}>
             <input
               type="text"
               placeholder="Ask about your emissions, travel alternatives..."
               value={input}
               onChange={e => setInput(e.target.value)}
-              style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '0.95rem', outline: 'none', color: 'var(--color-text-main)' }}
+              style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '0.95rem', outline: 'none', color: 'var(--color-text-main)', minWidth: 0 }}
             />
-            <div style={{ display: 'flex', gap: '0.5rem', color: 'var(--color-text-muted)' }}>
-              <button type="button" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}><Mic size={18} /></button>
-            </div>
+            <button type="button" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', flexShrink: 0 }}>
+              <Mic size={18} />
+            </button>
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              style={{ background: 'var(--color-primary-dark)', color: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: (!input.trim() || loading) ? 0.5 : 1 }}
+              style={{ background: 'var(--color-primary-dark)', color: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: (!input.trim() || loading) ? 0.5 : 1, flexShrink: 0 }}
             >
               <Send size={16} />
             </button>
           </form>
           <div style={{ padding: '0.5rem 1rem', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Lock size={12} /> Private &amp; Anonymized • Press Enter to send</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <Lock size={12} /> Private &amp; Anonymized • Press Enter to send
+            </span>
           </div>
         </div>
-
       </div>
 
-      {/* Right Sidebar */}
-      <div style={{ width: '300px', display: 'flex', flexDirection: 'column', gap: '1.5rem', overflowY: 'auto', paddingRight: '0.5rem' }}>
+      {/* ── Right Sidebar ─────────────────────────────────────────────── */}
+      <aside className="askai-sidebar">
 
         <div className="card" style={{ background: 'var(--color-primary-light)', border: '1px solid var(--color-mint-border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-            <div style={{ background: 'var(--color-primary-dark)', color: 'white', padding: '0.5rem', borderRadius: '10px' }}><Leaf size={18} /></div>
+            <div style={{ background: 'var(--color-primary-dark)', color: 'white', padding: '0.5rem', borderRadius: '10px', flexShrink: 0 }}>
+              <Leaf size={18} />
+            </div>
             <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: 0 }}>Your Carbon Context</h3>
           </div>
           <p style={{ fontSize: '0.9rem', color: 'var(--color-text-main)', lineHeight: 1.6, marginBottom: '1rem' }}>
             The AI has full access to your logged activities. Ask about your totals, trends, or any specific day — it will pull your real data.
           </p>
           <a href="/dashboard" style={{ textDecoration: 'none' }}>
-            <button className="btn btn-light" style={{ width: '100%', fontSize: '0.85rem' }}>View Dashboard &rarr;</button>
+            <button className="btn btn-light" style={{ width: '100%', fontSize: '0.85rem' }}>View Dashboard →</button>
           </a>
         </div>
 
@@ -243,7 +241,9 @@ export default function AskAI() {
             Model hypothetical lifestyle changes — like switching to the bus or cutting meat — to see the real CO₂ impact before you commit.
           </p>
           <a href="/what-if" style={{ textDecoration: 'none' }}>
-            <button className="btn btn-light" style={{ width: '100%', fontSize: '0.85rem', background: 'var(--color-bg-subtle)' }}>Open What-If Simulator &rarr;</button>
+            <button className="btn btn-light" style={{ width: '100%', fontSize: '0.85rem', background: 'var(--color-bg-subtle)' }}>
+              Open What-If Simulator →
+            </button>
           </a>
         </div>
 
@@ -257,7 +257,7 @@ export default function AskAI() {
           </div>
         </div>
 
-      </div>
+      </aside>
     </div>
   );
 }

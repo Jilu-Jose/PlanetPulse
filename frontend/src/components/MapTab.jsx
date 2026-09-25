@@ -102,6 +102,7 @@ export default function MapTab() {
   const [showSettings, setShowSettings] = useState(false);
   const [editingProfile, setEditingProfile] = useState({ region_id: '', share_to_map: false });
   const [savingSettings, setSavingSettings] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
     fetchProfile().then(p => {
@@ -146,20 +147,31 @@ export default function MapTab() {
   };
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.5rem', flexShrink: 0 }}>
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)', minHeight: '400px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.5rem', flexShrink: 0, flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
           <h1 className="page-title">Carbon Pulse Map</h1>
-          <p className="page-subtitle">Interactive emissions forecast and telemetry across India.</p>
+          <p className="page-subtitle" style={{ marginBottom: 0 }}>Interactive emissions forecast and telemetry across India.</p>
         </div>
-        <button 
-          onClick={() => setShowSettings(!showSettings)}
-          className="btn btn-light"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem' }}
-        >
-          <Settings size={18} />
-          <span>My Region</span>
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {/* Mobile sidebar toggle */}
+          <button
+            className="btn btn-light map-sidebar-toggle"
+            onClick={() => setShowSidebar(s => !s)}
+            style={{ alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem' }}
+          >
+            <Settings size={18} />
+            <span>{showSidebar ? 'Hide Panel' : 'Show Panel'}</span>
+          </button>
+          <button 
+            onClick={() => setShowSettings(!showSettings)}
+            className="btn btn-light"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem' }}
+          >
+            <Settings size={18} />
+            <span>My Region</span>
+          </button>
+        </div>
       </div>
 
       {showSettings && (
@@ -210,10 +222,13 @@ export default function MapTab() {
       )}
 
       {/* Main Map Container */}
-      <div style={{ display: 'flex', gap: '1.5rem', flex: 1, minHeight: 0 }}>
+      <div className="map-main-row" style={{ display: 'flex', gap: '1.5rem', flex: 1, minHeight: 0 }}>
         
         {/* Left Sidebar */}
-        <div style={{ width: '320px', display: 'flex', flexDirection: 'column', gap: '1.5rem', overflowY: 'auto', flexShrink: 0 }}>
+        <div
+          className={`map-sidebar${showSidebar ? ' map-sidebar--open' : ''}`}
+          style={{ width: '320px', display: 'flex', flexDirection: 'column', gap: '1.5rem', overflowY: 'auto', flexShrink: 0 }}
+        >
           
           {/* Timeline Scrubber */}
           <div className="card">

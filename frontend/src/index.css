@@ -247,6 +247,11 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 0 3px rgba(68, 137, 99, 0.1);
 }
 
+/* Range slider — match theme green */
+input[type="range"] {
+  accent-color: var(--color-primary);
+}
+
 /* Grids */
 .grid {
   display: grid;
@@ -302,9 +307,41 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0.875rem 1.5rem;
   }
 
+  /* Collapse 8-link nav at tablet: show hamburger early */
+  .nav-hamburger {
+    display: flex;
+  }
+
+  .nav-quick-add-btn,
+  .nav-bell,
+  .nav-user {
+    display: none;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    order: 3;
+    padding: 0.75rem 0 0.5rem;
+    gap: 0.25rem;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    margin-top: 0.5rem;
+  }
+
+  .nav-links--open {
+    display: flex;
+  }
+
+  .navbar {
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
   .nav-link {
-    padding: 0.5rem 0.85rem;
-    font-size: 0.875rem;
+    padding: 0.65rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
   }
 }
 
@@ -387,6 +424,52 @@ h1, h2, h3, h4, h5, h6 {
   .card {
     padding: 1.25rem;
   }
+
+  /* Grid span-2 cards should take full width when grid collapses */
+  .grid-cols-3 > [style*="gridColumn: 'span 2'"],
+  .grid-cols-3 > [style*="grid-column: span 2"] {
+    grid-column: span 1;
+  }
+
+  /* Dashboard header card — let CO2 total and range switcher stack */
+  .dashboard-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  /* History page header */
+  .history-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  /* History page header */
+  .history-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  /* Map — collapse sidebar on mobile */
+  .map-sidebar {
+    display: none;
+  }
+  .map-sidebar--open {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  /* WhatIf savings banner */
+  .whatif-savings-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 }
 
 /* Small mobile: ≤ 480px */
@@ -464,6 +547,129 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-floating-delayed {
   animation: floating 7s ease-in-out 1.5s infinite;
+}
+
+/* ── Landing page responsive grids (inline styles use these class overrides) */
+.landing-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: flex-end;
+}
+
+.landing-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.landing-factors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.landing-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.landing-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.landing-whatif-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.landing-testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.landing-hero-image {
+  position: relative;
+  height: 520px;
+  display: flex;
+  align-items: flex-end;
+}
+
+@media (max-width: 1024px) {
+  .landing-steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .landing-whatif-grid {
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .landing-hero-image {
+    height: 280px;
+  }
+  .landing-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .landing-factors-grid {
+    grid-template-columns: 1fr;
+  }
+  .landing-steps-grid {
+    grid-template-columns: 1fr;
+  }
+  .landing-features-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .landing-whatif-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .landing-testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .landing-section-h2 {
+    font-size: 1.75rem !important;
+  }
+  .landing-cta-h2 {
+    font-size: 2rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-factors-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .landing-hero-image {
+    height: 220px;
+  }
+}
+
+/* ── Map page responsive sidebar toggle button ─────────────────────────── */
+.map-sidebar-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .map-sidebar-toggle {
+    display: inline-flex;
+  }
+  .map-main-row {
+    flex-direction: column;
+  }
 }
 
 /* Custom Scrollbar for Chat */

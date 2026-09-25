@@ -229,7 +229,7 @@ export default function WhatIf() {
       </div>
 
       {result && result.saving_kg > 0 && (
-        <div style={{ background: 'var(--color-primary-light)', borderRadius: '24px', padding: '1.5rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', border: '1px solid var(--color-mint-border)' }}>
+        <div className="whatif-savings-banner" style={{ background: 'var(--color-primary-light)', borderRadius: '24px', padding: '1.5rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', border: '1px solid var(--color-mint-border)', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
               <Leaf size={32} color="var(--color-primary)" />

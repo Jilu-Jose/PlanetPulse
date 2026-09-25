@@ -250,6 +250,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 .meth-search-box {
   display: flex;
@@ -259,7 +261,8 @@
   border: 1px solid #D1D5DB;
   padding: 0.5rem 1rem;
   border-radius: 999px;
-  width: 300px;
+  max-width: 300px;
+  width: 100%;
 }
 .meth-search-box input {
   border: none;

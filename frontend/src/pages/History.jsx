@@ -111,7 +111,7 @@ export default function History({ refreshKey }) {
 
   return (
     <div className="animate-fade-in">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+      <div className="history-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 className="page-title">Activity History</h1>
           <p className="page-subtitle">Review, filter and delete your logged activities.</p>
@@ -198,7 +198,8 @@ export default function History({ refreshKey }) {
       ) : (
         <>
           <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', minWidth: '600px' }}>
               <thead>
                 <tr style={{ background: 'var(--color-bg-subtle)', borderBottom: '1px solid #E5E7EB' }}>
                   {['Date', 'Type', 'Quantity', 'CO₂ (kg)', 'Formula', ''].map(h => (
@@ -240,6 +241,7 @@ export default function History({ refreshKey }) {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
 
           {/* Pagination */}

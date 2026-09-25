@@ -38,15 +38,15 @@ export default function Landing() {
 
       {/* HERO */}
       <section style={{ background:"linear-gradient(160deg, #f9f7f3 0%, #eaf3ec 60%, #d4ede0 100%)", padding:"5rem 2rem 0", position:"relative", overflow:"hidden" }}>
-        <div style={{ maxWidth:"1200px", margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:"4rem", alignItems:"flex-end" }}>
+        <div style={{ maxWidth:"1200px", margin:"0 auto" }} className="landing-hero-grid">
           <div style={{ paddingBottom:"5rem" }}>
             <div style={{ display:"inline-flex", alignItems:"center", gap:"0.5rem", background:"#EAF3EC", border:"1px solid #BBF7D0", borderRadius:"9999px", padding:"0.35rem 1rem", fontSize:"0.78rem", fontWeight:700, color:"#2F5D44", marginBottom:"2rem" }}>
               <Leaf size={13} /> Track 2 · Climate Tech · Hackathon 2026
             </div>
-            <h1 style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"clamp(2.5rem, 5vw, 3.8rem)", fontWeight:800, lineHeight:1.1, marginBottom:"1.5rem", letterSpacing:"-0.02em" }}>
+            <h1 style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"clamp(2rem, 5vw, 3.8rem)", fontWeight:800, lineHeight:1.1, marginBottom:"1.5rem", letterSpacing:"-0.02em" }}>
               Turn everyday<br/>decisions into<br/><span style={{ color:"#2F5D44" }}>measurable<br/>climate impact.</span>
             </h1>
-            <p style={{ fontSize:"1.1rem", color:"#4B5563", lineHeight:1.7, marginBottom:"2.5rem", maxWidth:"460px" }}>
+            <p style={{ fontSize:"clamp(0.95rem, 2vw, 1.1rem)", color:"#4B5563", lineHeight:1.7, marginBottom:"2.5rem", maxWidth:"460px" }}>
               PlanetPulse converts your travel, food, and energy choices into exact CO2e figures using Python Decimal arithmetic, fixed IPCC factors, and zero approximations.
             </p>
             <div style={{ display:"flex", gap:"1rem", flexWrap:"wrap", marginBottom:"2.5rem" }}>
@@ -57,21 +57,22 @@ export default function Landing() {
                 View Dashboard <ArrowRight size={16} />
               </button>
             </div>
-            <div style={{ display:"flex", alignItems:"center", gap:"1rem", fontSize:"0.8rem", color:"#6B7280" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:"1rem", fontSize:"0.8rem", color:"#6B7280", flexWrap:"wrap" }}>
               {[1,2,3,4,5].map(i => <Star key={i} size={13} fill="#F59E0B" color="#F59E0B" />)}
               <span style={{ fontWeight:600 }}>4.9/5</span>
               <span>· Open-source engine · No account required</span>
             </div>
           </div>
-          <div style={{ position:"relative", height:"520px", display:"flex", alignItems:"flex-end" }}>
+
+          <div className="landing-hero-image">
             <div className="animate-floating-delayed" style={{ position:"absolute", right:0, bottom:0, width:"75%", borderRadius:"20px 20px 0 0", overflow:"hidden", boxShadow:"0 20px 60px rgba(0,0,0,0.12)" }}>
-              <img src={heroLifestyle} alt="Lifestyle" style={{ width:"100%", height:"380px", objectFit:"cover", display:"block" }} />
+              <img src={heroLifestyle} alt="Lifestyle" style={{ width:"100%", height:"100%", minHeight:"200px", objectFit:"cover", display:"block" }} />
             </div>
             <div className="animate-floating" style={{ position:"absolute", left:0, bottom:"80px", width:"55%", borderRadius:"20px", overflow:"hidden", boxShadow:"0 30px 80px rgba(0,0,0,0.18)", border:"3px solid white" }}>
-              <img src={heroPhone} alt="App on phone" style={{ width:"100%", height:"300px", objectFit:"cover", display:"block" }} />
+              <img src={heroPhone} alt="App on phone" style={{ width:"100%", height:"100%", minHeight:"150px", objectFit:"cover", display:"block" }} />
             </div>
             <div style={{ position:"absolute", top:"20px", right:"20px", background:"white", borderRadius:"16px", padding:"0.75rem 1.25rem", boxShadow:"0 8px 30px rgba(0,0,0,0.1)", display:"flex", alignItems:"center", gap:"0.75rem", zIndex:10 }}>
-              <div style={{ width:"36px", height:"36px", background:"#EAF3EC", borderRadius:"10px", display:"flex", alignItems:"center", justifyContent:"center" }}><TrendingDown size={18} color="#2F5D44" /></div>
+              <div style={{ width:"36px", height:"36px", background:"#EAF3EC", borderRadius:"10px", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}><TrendingDown size={18} color="#2F5D44" /></div>
               <div>
                 <div style={{ fontSize:"0.7rem", color:"#6B7280", fontWeight:600 }}>THIS WEEK</div>
                 <div style={{ fontSize:"1.1rem", fontWeight:800, color:"#2F5D44" }}>-18.4% CO2</div>
@@ -98,10 +99,10 @@ export default function Landing() {
 
       {/* STATS */}
       <section style={{ background:"white", padding:"5rem 2rem" }}>
-        <div style={{ maxWidth:"1200px", margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"2rem" }}>
+        <div style={{ maxWidth:"1200px", margin:"0 auto" }} className="landing-stats-grid">
           {STATS.map(s => (
             <div key={s.value} style={{ textAlign:"center", padding:"2rem", borderRadius:"20px", background:"#F9F7F3" }}>
-              <div style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"3rem", fontWeight:800, color:"#2F5D44", lineHeight:1 }}>{s.value}</div>
+              <div style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"clamp(2rem,4vw,3rem)", fontWeight:800, color:"#2F5D44", lineHeight:1 }}>{s.value}</div>
               <div style={{ fontWeight:700, marginTop:"0.75rem" }}>{s.label}</div>
               <div style={{ fontSize:"0.85rem", color:"#6B7280", marginTop:"0.25rem" }}>{s.sub}</div>
             </div>
@@ -114,10 +115,11 @@ export default function Landing() {
         <div style={{ maxWidth:"1200px", margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:"3.5rem" }}>
             <div style={{ display:"inline-block", background:"#EAF3EC", color:"#2F5D44", borderRadius:"9999px", padding:"0.3rem 1rem", fontSize:"0.75rem", fontWeight:700, marginBottom:"1rem" }}>HOW IT WORKS</div>
-            <h2 style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"2.4rem", fontWeight:800, marginBottom:"1rem" }}>Most carbon apps rely on vague assumptions.<br/>We do deterministic arithmetic.</h2>
+            <h2 className="landing-section-h2" style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"clamp(1.5rem,3vw,2.4rem)", fontWeight:800, marginBottom:"1rem" }}>Most carbon apps rely on vague assumptions.<br/>We do deterministic arithmetic.</h2>
             <p style={{ color:"#6B7280", fontSize:"1.05rem", maxWidth:"560px", margin:"0 auto" }}>Log an activity, the engine applies a fixed factor, you see the exact number. Every time.</p>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"1rem", marginBottom:"2rem" }}>
+
+          <div className="landing-factors-grid">
             {EMISSION_FACTORS.map(f => (
               <div key={f.label} style={{ background:"white", borderRadius:"16px", padding:"1.25rem 1.5rem", display:"flex", alignItems:"center", gap:"1rem", boxShadow:"0 2px 12px rgba(0,0,0,0.04)", border:"1px solid rgba(0,0,0,0.04)" }}>
                 <div style={{ width:"40px", height:"40px", borderRadius:"12px", background:f.color+"18", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
@@ -130,7 +132,8 @@ export default function Landing() {
               </div>
             ))}
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"1rem" }}>
+
+          <div className="landing-steps-grid">
             {[{step:"01",title:"Log a choice",desc:"Pick activity type and quantity. Date defaults to today."},
               {step:"02",title:"Engine calculates",desc:"qty x fixed_factor via Python Decimal. Formula returned as string."},
               {step:"03",title:"Dashboard updates",desc:"Live SQL SUM reflects instantly in all charts and totals."},
@@ -150,9 +153,9 @@ export default function Landing() {
         <div style={{ maxWidth:"1200px", margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:"3.5rem" }}>
             <div style={{ display:"inline-block", background:"#EAF3EC", color:"#2F5D44", borderRadius:"9999px", padding:"0.3rem 1rem", fontSize:"0.75rem", fontWeight:700, marginBottom:"1rem" }}>FEATURES</div>
-            <h2 style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"2.4rem", fontWeight:800 }}>Everything you need to understand<br/>your personal emissions.</h2>
+            <h2 className="landing-section-h2" style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"clamp(1.5rem,3vw,2.4rem)", fontWeight:800 }}>Everything you need to understand<br/>your personal emissions.</h2>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"1.5rem" }}>
+          <div className="landing-features-grid">
             {FEATURES.map(f => (
               <div key={f.title} style={{ padding:"2rem", borderRadius:"20px", background:"#F9F7F3", border:"1px solid rgba(0,0,0,0.04)" }}>
                 <div style={{ width:"44px", height:"44px", background:"#EAF3EC", borderRadius:"12px", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:"1.25rem" }}>
@@ -168,10 +171,10 @@ export default function Landing() {
 
       {/* WHAT-IF */}
       <section style={{ padding:"5rem 2rem", background:"#1C2822", color:"white" }}>
-        <div style={{ maxWidth:"1200px", margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:"5rem", alignItems:"center" }}>
+        <div style={{ maxWidth:"1200px", margin:"0 auto" }} className="landing-whatif-grid">
           <div>
             <div style={{ display:"inline-block", background:"rgba(68,137,99,0.2)", color:"#71B28C", borderRadius:"9999px", padding:"0.3rem 1rem", fontSize:"0.75rem", fontWeight:700, marginBottom:"1.5rem" }}>WHAT-IF SIMULATOR</div>
-            <h2 style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"2.2rem", fontWeight:800, marginBottom:"1.25rem", lineHeight:1.2 }}>Pre-compute the greener choice.</h2>
+            <h2 className="landing-section-h2" style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"clamp(1.5rem,3vw,2.2rem)", fontWeight:800, marginBottom:"1.25rem", lineHeight:1.2 }}>Pre-compute the greener choice.</h2>
             <p style={{ color:"rgba(255,255,255,0.6)", lineHeight:1.7, fontSize:"1rem", marginBottom:"2rem" }}>Before you book a flight or choose a commute, run the numbers. The simulator shows the CO2 delta between any two choices instantly.</p>
             {["Car vs Bus for 50 km commute saves 6.00 kg CO2","Flight vs train - see exact delta per km","Meat vs veg meal, 5 days a week - save 12.5 kg/month"].map(item => (
               <div key={item} style={{ display:"flex", alignItems:"flex-start", gap:"0.75rem", fontSize:"0.9rem", color:"rgba(255,255,255,0.75)", marginBottom:"0.75rem" }}>
@@ -213,9 +216,9 @@ export default function Landing() {
         <div style={{ maxWidth:"1200px", margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:"3rem" }}>
             <div style={{ display:"inline-block", background:"#EAF3EC", color:"#2F5D44", borderRadius:"9999px", padding:"0.3rem 1rem", fontSize:"0.75rem", fontWeight:700, marginBottom:"1rem" }}>COMMUNITY</div>
-            <h2 style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"2rem", fontWeight:800 }}>People who care about the math.</h2>
+            <h2 className="landing-section-h2" style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"clamp(1.4rem,3vw,2rem)", fontWeight:800 }}>People who care about the math.</h2>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"1.5rem" }}>
+          <div className="landing-testimonials-grid">
             {TESTIMONIALS.map(t => (
               <div key={t.name} style={{ padding:"2rem", borderRadius:"20px", background:"#F9F7F3", border:"1px solid rgba(0,0,0,0.04)" }}>
                 <div style={{ display:"flex", gap:"0.25rem", marginBottom:"1rem" }}>
@@ -223,7 +226,7 @@ export default function Landing() {
                 </div>
                 <p style={{ fontSize:"0.95rem", lineHeight:1.6, color:"#374151", marginBottom:"1.25rem" }}>"{t.text}"</p>
                 <div style={{ display:"flex", alignItems:"center", gap:"0.75rem" }}>
-                  <div style={{ width:"36px", height:"36px", borderRadius:"50%", background:"#EAF3EC", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, color:"#2F5D44", fontSize:"0.85rem" }}>{t.name[0]}</div>
+                  <div style={{ width:"36px", height:"36px", borderRadius:"50%", background:"#EAF3EC", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, color:"#2F5D44", fontSize:"0.85rem", flexShrink:0 }}>{t.name[0]}</div>
                   <div>
                     <div style={{ fontWeight:700, fontSize:"0.9rem" }}>{t.name}</div>
                     <div style={{ fontSize:"0.78rem", color:"#9CA3AF" }}>{t.handle}</div>
@@ -241,7 +244,7 @@ export default function Landing() {
           <div style={{ width:"64px", height:"64px", background:"rgba(255,255,255,0.1)", borderRadius:"20px", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 2rem" }}>
             <Leaf size={32} color="white" />
           </div>
-          <h2 style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"2.8rem", fontWeight:800, marginBottom:"1.25rem", lineHeight:1.2 }}>Start your journey toward<br/>radical carbon clarity.</h2>
+          <h2 className="landing-cta-h2" style={{ fontFamily:"Plus Jakarta Sans, sans-serif", fontSize:"clamp(1.75rem,4vw,2.8rem)", fontWeight:800, marginBottom:"1.25rem", lineHeight:1.2 }}>Start your journey toward<br/>radical carbon clarity.</h2>
           <p style={{ color:"rgba(255,255,255,0.65)", fontSize:"1.1rem", marginBottom:"2.5rem", lineHeight:1.6 }}>No account. No email. Just open the tracker and log your first activity. Every gram of CO2 strictly accounted for.</p>
           <div style={{ display:"flex", gap:"1rem", justifyContent:"center", flexWrap:"wrap" }}>
             <button onClick={() => navigate("/add")} style={S.btn("white","#2F5D44",{ boxShadow:"0 8px 30px rgba(0,0,0,0.2)", fontSize:"1.05rem", padding:"1rem 2.5rem" })}>
